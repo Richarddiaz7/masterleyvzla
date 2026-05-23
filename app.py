@@ -9,6 +9,8 @@ app = Flask(__name__)
 CORS(app)
 DB_NAME = 'master_ley.db'
 
+# Inicializar la base de datos al arrancar
+init_db()
 def get_db():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row

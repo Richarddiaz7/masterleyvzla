@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máster Ley Vzla IA</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 16px;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 24px; color: var(--accent); }
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 14px;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .card:active { transform: scale(0.98); }
+        .card h2 { color: var(--accent); font-size: 18px; margin-bottom: 6px; }
+        .card p { color: var(--muted); font-size: 14px; }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary { background: var(--accent); color: #0f172a; }
+        .btn-secondary { background: #334155; color: var(--text); }
+        .opciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .opcion {
+            padding: 16px;
+            background: var(--card);
+            border: 2px solid #334155;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .opcion.correct { border-color: var(--success); background: #064e3b; }
+        .opcion.incorrect { border-color: var(--danger); background: #7f1d1d; }
+        .explicacion {
+            background: #1e293b;
+            padding: 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .progress {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            margin: 8px 0;
+        }
+        .progress-fill {
+            height: 6px;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: .3s;
+        }
+        .hidden { display: none; }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-gratis { background: #334155; }
+        .badge-premium { background: var(--accent); color: #0f172a; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚖️ Máster Ley Vzla IA</h1>
+        <p>Practica Derecho Constitucional con casos reales</p>
+    </div>
+
+    <div id="temasScreen">
+        <div class="card">
+            <h2>📚 Elige un tema</h2>
+            <p>Selecciona un artículo constitucional</p>
+        </div>
+        <div id="temasContainer"></div>
+    </div>
+
+    <div id="preguntaScreen" class="hidden">
+        <div class="card">
+            <h2 id="enunciado"></h2>
+        </div>
+        <div class="opciones" id="opcionesContainer"></div>
+        <div id="explicacion" class="explicacion hidden"></div>
+        <button id="btnSiguiente" class="button btn-primary hidden" onclick="cargarPregunta()">Siguiente ▶</button>
+        <button class="button btn-secondary" onclick="volverTemas()">⬅ Volver</button>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Retos hoy: <span id="retosHoy">0</span>/3</span>
+            <span id="badgeCuenta"></span>
+        </div>
+        <div class="progress"><div class="progress-fill" id="progresoFill"></div></div>
+    </div>
+
+    <script>
+        // Cambia esta URL por la de tu app en Render cuando la tengas
+        const API = 'https://TU_APP.onrender.com/api';
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        let usuarioId = tg.initDataUnsafe?.user?.id || 'demo_user';
+        let usuarioData = {};
+        let preguntaActual = null;
+
+        async function cargarUsuario() {
+            const resp = await fetch(`${API}/usuario/${usuarioId}`);
+            usuarioData = await resp.json();
+            actualizarUI();
+        }
+
+        function actualizarUI() {
+            const retos = usuarioData.retos_respondidos_hoy || 0;
+            document.getElementById('retosHoy').textContent = retos;
+            document.getElementById('progresoFill').style.width = Math.min((retos/3)*100, 100) + '%';
+            const badge = document.getElementById('badgeCuenta');
+            badge.innerHTML = usuarioData.tipo_cuenta === 'PREMIUM' ? 
+                '<span class="badge badge-premium">PREMIUM</span>' : 
+                '<span class="badge badge-gratis">GRATIS</span>';
+        }
+
+        async function cargarTemas() {
+            const resp = await fetch(`${API}/articulos`);
+            const temas = await resp.json();
+            document.getElementById('temasContainer').innerHTML = temas.map(t => `
+                <div class="card" onclick="seleccionarTema(${t.id})">
+                    <h2>📘 Art. ${t.numero}</h2>
+                    <p>${t.titulo}</p>
+                </div>
+            `).join('');
+        }
+
+        async function seleccionarTema(id) {
+            await fetch(`${API}/usuario/${usuarioId}/tema/${id}`, { method:'POST' });
+            await cargarUsuario();
+            if (usuarioData.tipo_cuenta === 'GRATIS' && usuarioData.retos_respondidos_hoy >= 3) {
+                alert('⚠️ Límite de 3 retos gratuitos alcanzado. Pásate a PREMIUM.');
+                return;
+            }
+            cargarPregunta();
+        }
+
+        async function cargarPregunta() {
+            const resp = await fetch(`${API}/pregunta/${usuarioId}`);
+            if (!resp.ok) {
+                alert('Selecciona un tema primero.');
+                volverTemas();
+                return;
+            }
+            preguntaActual = await resp.json();
+            document.getElementById('temasScreen').classList.add('hidden');
+            document.getElementById('preguntaScreen').classList.remove('hidden');
+            document.getElementById('enunciado').textContent = preguntaActual.enunciado;
+            const opciones = ['A','B','C','D'];
+            document.getElementById('opcionesContainer').innerHTML = opciones.map(l => `
+                <div class="opcion" id="op_${l}" onclick="responder('${l}')">${l}) ${preguntaActual['opcion_'+l.toLowerCase()]}</div>
+            `).join('');
+            document.getElementById('explicacion').classList.add('hidden');
+            document.getElementById('btnSiguiente').classList.add('hidden');
+        }
+
+        async function responder(letra) {
+            document.querySelectorAll('.opcion').forEach(o => o.style.pointerEvents = 'none');
+            const resp = await fetch(`${API}/responder/${usuarioId}`, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ pregunta_id: preguntaActual.id, respuesta: letra })
+            });
+            const r = await resp.json();
+            document.getElementById('op_'+r.respuesta_correcta).classList.add('correct');
+            if (!r.correcta) document.getElementById('op_'+letra).classList.add('incorrect');
+            document.getElementById('explicacion').textContent = '💡 ' + r.explicacion;
+            document.getElementById('explicacion').classList.remove('hidden');
+            document.getElementById('btnSiguiente').classList.remove('hidden');
+            await cargarUsuario();
+        }
+
+        function volverTemas() {
+            document.getElementById('temasScreen').classList.remove('hidden');
+            document.getElementById('preguntaScreen').classList.add('hidden');
+            preguntaActual = null;
+            cargarTemas();
+        }
+
+        // Inicio
+        cargarUsuario();
+        cargarTemas();
+    </script>
+</body>
+  </html>

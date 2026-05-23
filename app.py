@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import sqlite3
 import datetime
@@ -85,6 +85,7 @@ def init_db():
         conn.commit()
     conn.close()
 
+# Rutas de la API
 @app.route('/api/articulos', methods=['GET'])
 def get_articulos():
     conn = get_db()
@@ -170,9 +171,11 @@ def responder(usuario_id):
         "explicacion": pregunta['explicacion']
     })
 
+# Ruta para servir el frontend
 @app.route('/')
-def home():
-    return "API de Máster Ley Vzla IA funcionando."
+@app.route('/index.html')
+def serve_frontend():
+    return send_from_directory('.', 'index.html')
 
 if __name__ == '__main__':
     init_db()

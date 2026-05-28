@@ -174,7 +174,6 @@
             const doc = await userRef.get();
 
             if (!doc.exists) {
-                // Crear usuario nuevo
                 await userRef.set({
                     nombre: tg.initDataUnsafe?.user?.first_name || 'Estudiante',
                     tipo_cuenta: 'GRATIS',
@@ -237,7 +236,6 @@
             await userRef.update({ tema_actual: Number(articuloId) });
             usuarioData.tema_actual = Number(articuloId);
 
-            // Verificar límite
             if (usuarioData.tipo_cuenta === 'GRATIS' && usuarioData.retos_respondidos_hoy >= 3) {
                 alert('⚠️ Límite de 3 retos gratuitos alcanzado. Pásate a PREMIUM.');
                 return;
@@ -294,7 +292,6 @@
             document.getElementById('explicacion').classList.remove('hidden');
             document.getElementById('btnSiguiente').classList.remove('hidden');
 
-            // Incrementar contador si es GRATIS
             if (usuarioData.tipo_cuenta === 'GRATIS') {
                 await incrementarRetos();
             }

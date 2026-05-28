@@ -1,191 +1,317 @@
-from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
-import sqlite3
-import datetime
-import random
-import os
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máster Ley Vzla IA</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Firebase SDKs (CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --accent: #f59e0b;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 16px;
+            line-height: 1.5;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 24px; color: var(--accent); }
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 14px;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .card:active { transform: scale(0.98); }
+        .card h2 { color: var(--accent); font-size: 18px; margin-bottom: 6px; }
+        .card p { color: var(--muted); font-size: 14px; }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary { background: var(--accent); color: #0f172a; }
+        .btn-secondary { background: #334155; color: var(--text); }
+        .opciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .opcion {
+            padding: 16px;
+            background: var(--card);
+            border: 2px solid #334155;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .opcion.correct { border-color: var(--success); background: #064e3b; }
+        .opcion.incorrect { border-color: var(--danger); background: #7f1d1d; }
+        .explicacion {
+            background: #1e293b;
+            padding: 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .progress {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            margin: 8px 0;
+        }
+        .progress-fill {
+            height: 6px;
+            background: var(--accent);
+            border-radius: 3px;
+            transition: .3s;
+        }
+        .hidden { display: none; }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-gratis { background: #334155; }
+        .badge-premium { background: var(--accent); color: #0f172a; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚖️ Máster Ley Vzla IA</h1>
+        <p>Practica Derecho Constitucional con casos reales</p>
+    </div>
 
-app = Flask(__name__)
-CORS(app)
-DB_NAME = 'master_ley.db'
+    <div id="temasScreen">
+        <div class="card">
+            <h2>📚 Elige un tema</h2>
+            <p>Selecciona un artículo constitucional</p>
+        </div>
+        <div id="temasContainer"></div>
+    </div>
 
-# ------------------------------------------------------------
-# FUNCIONES DE BASE DE DATOS (definidas primero)
-# ------------------------------------------------------------
-def get_db():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
-    return conn
+    <div id="preguntaScreen" class="hidden">
+        <div class="card">
+            <h2 id="enunciado"></h2>
+        </div>
+        <div class="opciones" id="opcionesContainer"></div>
+        <div id="explicacion" class="explicacion hidden"></div>
+        <button id="btnSiguiente" class="button btn-primary hidden" onclick="cargarPregunta()">Siguiente ▶</button>
+        <button class="button btn-secondary" onclick="volverTemas()">⬅ Volver</button>
+    </div>
 
-def init_db():
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS usuarios (
-            usuario_id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            tipo_cuenta TEXT DEFAULT 'GRATIS',
-            retos_respondidos_hoy INTEGER DEFAULT 0,
-            ultimo_acceso TEXT,
-            tema_actual INTEGER DEFAULT NULL
-        )
-    ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS articulos (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            numero INTEGER UNIQUE,
-            titulo TEXT,
-            contenido TEXT
-        )
-    ''')
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS preguntas (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            articulo_id INTEGER NOT NULL,
-            enunciado TEXT NOT NULL,
-            opcion_a TEXT NOT NULL,
-            opcion_b TEXT NOT NULL,
-            opcion_c TEXT NOT NULL,
-            opcion_d TEXT NOT NULL,
-            respuesta_correcta TEXT NOT NULL,
-            explicacion TEXT,
-            FOREIGN KEY (articulo_id) REFERENCES articulos(id)
-        )
-    ''')
-    conn.commit()
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Retos hoy: <span id="retosHoy">0</span>/3</span>
+            <span id="badgeCuenta"></span>
+        </div>
+        <div class="progress"><div class="progress-fill" id="progresoFill"></div></div>
+    </div>
 
-    # Insertar artículos por defecto
-    articulos_data = [
-        (334, 'Control Difuso y Concentrado', 'Artículo 334...'),
-        (335, 'TSJ como máximo intérprete', 'Artículo 335...'),
-        (340, 'Enmienda Constitucional', 'La enmienda tiene por objeto...')
-    ]
-    for num, tit, cont in articulos_data:
-        cursor.execute("INSERT OR IGNORE INTO articulos (numero, titulo, contenido) VALUES (?,?,?)", (num, tit, cont))
-    conn.commit()
+    <script>
+        // --------------------------------------
+        // CONFIGURACIÓN DE FIREBASE
+        // --------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOecJaAR2WJ8MW-WRSEqoxUYGEgxenxK8",
+            authDomain: "masterleyvzla.firebaseapp.com",
+            projectId: "masterleyvzla",
+            storageBucket: "masterleyvzla.firebasestorage.app",
+            messagingSenderId: "178092366571",
+            appId: "1:178092366571:web:1c64f7cc911ceb6778bcae",
+            measurementId: "G-YV5TFKLBLQ"
+        };
 
-    # Insertar preguntas de ejemplo si está vacío
-    cursor.execute("SELECT COUNT(*) FROM preguntas")
-    if cursor.fetchone()[0] == 0:
-        preguntas = [
-            (1, 'Un juez de municipio desaplica una ordenanza por inconstitucional. ¿Qué control ejerce?', 
-             'Control concentrado', 'Control difuso', 'Control de legalidad', 'Control de convencionalidad', 'B', 
-             'El control difuso permite a cualquier juez desaplicar una norma en un caso concreto, sin anularla.'),
-            (1, '¿Quién declara la nulidad de una ley nacional con efectos generales?',
-             'Cualquier juez', 'La Sala Constitucional del TSJ', 'El Presidente', 'La Asamblea Nacional', 'B',
-             'Solo la Sala Constitucional ejerce el control concentrado con efectos erga omnes.'),
-            (2, 'Las interpretaciones de la Sala Constitucional son vinculantes para:',
-             'Solo para el caso resuelto', 'Para todas las salas del TSJ y demás tribunales', 'Solo para tribunales penales', 'Ninguna es correcta', 'B',
-             'Según el Art. 335, las interpretaciones de la Sala Constitucional son vinculantes para todas las salas del TSJ y para todos los tribunales.'),
-            (2, '¿Quién es el máximo y último intérprete de la Constitución?',
-             'El Presidente', 'La Asamblea Nacional', 'La Sala Constitucional del TSJ', 'El Fiscal General', 'C',
-             'La Sala Constitucional es el máximo intérprete según el Art. 335.')
-        ]
-        cursor.executemany(
-            "INSERT INTO preguntas (articulo_id, enunciado, opcion_a, opcion_b, opcion_c, opcion_d, respuesta_correcta, explicacion) VALUES (?,?,?,?,?,?,?,?)",
-            preguntas
-        )
-        conn.commit()
-    conn.close()
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-# ------------------------------------------------------------
-# RUTAS DE LA API
-# ------------------------------------------------------------
-@app.route('/api/articulos', methods=['GET'])
-def get_articulos():
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, numero, titulo FROM articulos")
-    articulos = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return jsonify(articulos)
+        // --------------------------------------
+        // VARIABLES GLOBALES
+        // --------------------------------------
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
 
-@app.route('/api/usuario/<usuario_id>', methods=['GET'])
-def get_usuario(usuario_id):
-    conn = get_db()
-    cursor = conn.cursor()
-    fecha_hoy = datetime.date.today().isoformat()
-    cursor.execute("SELECT * FROM usuarios WHERE usuario_id = ?", (usuario_id,))
-    usuario = cursor.fetchone()
-    if not usuario:
-        cursor.execute("INSERT INTO usuarios (usuario_id, nombre, tipo_cuenta, retos_respondidos_hoy, ultimo_acceso) VALUES (?, 'Estudiante', 'GRATIS', 0, ?)", (usuario_id, fecha_hoy))
-        conn.commit()
-        cursor.execute("SELECT * FROM usuarios WHERE usuario_id = ?", (usuario_id,))
-        usuario = cursor.fetchone()
-    else:
-        if usuario['ultimo_acceso'] != fecha_hoy:
-            cursor.execute("UPDATE usuarios SET retos_respondidos_hoy = 0, ultimo_acceso = ? WHERE usuario_id = ?", (fecha_hoy, usuario_id))
-            conn.commit()
-            cursor.execute("SELECT * FROM usuarios WHERE usuario_id = ?", (usuario_id,))
-            usuario = cursor.fetchone()
-    conn.close()
-    return jsonify(dict(usuario))
+        let usuarioId = tg.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : 'demo_user';
+        let usuarioData = {};
+        let preguntaActual = null;
 
-@app.route('/api/usuario/<usuario_id>/tema/<int:articulo_id>', methods=['POST'])
-def set_tema(usuario_id, articulo_id):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("UPDATE usuarios SET tema_actual = ? WHERE usuario_id = ?", (articulo_id, usuario_id))
-    conn.commit()
-    conn.close()
-    return jsonify({"ok": True})
+        // --------------------------------------
+        // FUNCIONES DE USUARIO
+        // --------------------------------------
+        async function cargarUsuario() {
+            const fechaHoy = new Date().toISOString().split('T')[0];
+            const userRef = db.collection('usuarios').doc(usuarioId);
+            const doc = await userRef.get();
 
-@app.route('/api/pregunta/<usuario_id>', methods=['GET'])
-def get_pregunta(usuario_id):
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT tema_actual, tipo_cuenta, retos_respondidos_hoy FROM usuarios WHERE usuario_id = ?", (usuario_id,))
-    usuario = cursor.fetchone()
-    if not usuario or not usuario['tema_actual']:
-        conn.close()
-        return jsonify({"error": "No hay tema seleccionado"}), 400
-    if usuario['tipo_cuenta'] == 'GRATIS' and usuario['retos_respondidos_hoy'] >= 3:
-        conn.close()
-        return jsonify({"error": "Límite de retos gratuitos alcanzado"}), 429
+            if (!doc.exists) {
+                // Crear usuario nuevo
+                await userRef.set({
+                    nombre: tg.initDataUnsafe?.user?.first_name || 'Estudiante',
+                    tipo_cuenta: 'GRATIS',
+                    retos_respondidos_hoy: 0,
+                    ultimo_acceso: fechaHoy,
+                    tema_actual: null,
+                    rol: 'usuario'
+                });
+                usuarioData = (await userRef.get()).data();
+            } else {
+                usuarioData = doc.data();
+                if (usuarioData.ultimo_acceso !== fechaHoy) {
+                    await userRef.update({
+                        retos_respondidos_hoy: 0,
+                        ultimo_acceso: fechaHoy
+                    });
+                    usuarioData.retos_respondidos_hoy = 0;
+                    usuarioData.ultimo_acceso = fechaHoy;
+                }
+            }
+            actualizarUI();
+        }
 
-    cursor.execute("SELECT * FROM preguntas WHERE articulo_id = ? ORDER BY RANDOM() LIMIT 1", (usuario['tema_actual'],))
-    pregunta = cursor.fetchone()
-    conn.close()
-    if not pregunta:
-        return jsonify({"error": "No hay preguntas para este tema"}), 404
-    return jsonify(dict(pregunta))
+        function actualizarUI() {
+            const retos = usuarioData.retos_respondidos_hoy || 0;
+            document.getElementById('retosHoy').textContent = retos;
+            document.getElementById('progresoFill').style.width = Math.min((retos / 3) * 100, 100) + '%';
+            const badge = document.getElementById('badgeCuenta');
+            badge.innerHTML = usuarioData.tipo_cuenta === 'PREMIUM' ?
+                '<span class="badge badge-premium">PREMIUM</span>' :
+                '<span class="badge badge-gratis">GRATIS</span>';
+        }
 
-@app.route('/api/responder/<usuario_id>', methods=['POST'])
-def responder(usuario_id):
-    data = request.json
-    pregunta_id = data['pregunta_id']
-    respuesta = data['respuesta']
-    
-    conn = get_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT respuesta_correcta, explicacion FROM preguntas WHERE id = ?", (pregunta_id,))
-    pregunta = cursor.fetchone()
-    
-    correcta = (respuesta == pregunta['respuesta_correcta'])
-    
-    cursor.execute("SELECT tipo_cuenta FROM usuarios WHERE usuario_id = ?", (usuario_id,))
-    usuario = cursor.fetchone()
-    if usuario and usuario['tipo_cuenta'] == 'GRATIS':
-        cursor.execute("UPDATE usuarios SET retos_respondidos_hoy = retos_respondidos_hoy + 1 WHERE usuario_id = ?", (usuario_id,))
-        conn.commit()
-    conn.close()
-    
-    return jsonify({
-        "correcta": correcta,
-        "respuesta_correcta": pregunta['respuesta_correcta'],
-        "explicacion": pregunta['explicacion']
-    })
+        async function incrementarRetos() {
+            const userRef = db.collection('usuarios').doc(usuarioId);
+            await userRef.update({
+                retos_respondidos_hoy: firebase.firestore.FieldValue.increment(1)
+            });
+            usuarioData.retos_respondidos_hoy++;
+            actualizarUI();
+        }
 
-# Ruta para servir el frontend
-@app.route('/')
-@app.route('/index.html')
-def serve_frontend():
-    return send_from_directory('.', 'index.html')
+        // --------------------------------------
+        // CARGAR TEMAS DESDE FIRESTORE
+        // --------------------------------------
+        async function cargarTemas() {
+            const snapshot = await db.collection('articulos').orderBy('numero', 'asc').get();
+            const temas = [];
+            snapshot.forEach(doc => temas.push({ id: doc.id, ...doc.data() }));
+            document.getElementById('temasContainer').innerHTML = temas.map(t => `
+                <div class="card" onclick="seleccionarTema('${t.id}')">
+                    <h2>📘 Art. ${t.numero || t.id}</h2>
+                    <p>${t.titulo}</p>
+                </div>
+            `).join('');
+        }
 
-# ------------------------------------------------------------
-# INICIALIZACIÓN DE LA BASE DE DATOS (se ejecuta al arrancar)
-# ------------------------------------------------------------
-init_db()
+        async function seleccionarTema(articuloId) {
+            const userRef = db.collection('usuarios').doc(usuarioId);
+            await userRef.update({ tema_actual: Number(articuloId) });
+            usuarioData.tema_actual = Number(articuloId);
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+            // Verificar límite
+            if (usuarioData.tipo_cuenta === 'GRATIS' && usuarioData.retos_respondidos_hoy >= 3) {
+                alert('⚠️ Límite de 3 retos gratuitos alcanzado. Pásate a PREMIUM.');
+                return;
+            }
+            cargarPregunta();
+        }
+
+        // --------------------------------------
+        // CARGAR PREGUNTA ALEATORIA
+        // --------------------------------------
+        async function cargarPregunta() {
+            if (!usuarioData.tema_actual) {
+                alert('Selecciona un tema primero.');
+                volverTemas();
+                return;
+            }
+            const preguntasRef = db.collection('preguntas')
+                .where('articulo_id', '==', usuarioData.tema_actual);
+            const snapshot = await preguntasRef.get();
+            if (snapshot.empty) {
+                alert('No hay preguntas para este tema aún.');
+                volverTemas();
+                return;
+            }
+            const preguntas = [];
+            snapshot.forEach(doc => preguntas.push({ id: doc.id, ...doc.data() }));
+            const randomIndex = Math.floor(Math.random() * preguntas.length);
+            preguntaActual = preguntas[randomIndex];
+
+            document.getElementById('temasScreen').classList.add('hidden');
+            document.getElementById('preguntaScreen').classList.remove('hidden');
+            document.getElementById('enunciado').textContent = preguntaActual.enunciado;
+            const opciones = ['A', 'B', 'C', 'D'];
+            document.getElementById('opcionesContainer').innerHTML = opciones.map(l => `
+                <div class="opcion" id="op_${l}" onclick="responder('${l}')">${l}) ${preguntaActual['opcion_' + l.toLowerCase()]}</div>
+            `).join('');
+            document.getElementById('explicacion').classList.add('hidden');
+            document.getElementById('btnSiguiente').classList.add('hidden');
+        }
+
+        // --------------------------------------
+        // RESPONDER Y ACTUALIZAR CONTADOR
+        // --------------------------------------
+        async function responder(letra) {
+            document.querySelectorAll('.opcion').forEach(o => o.style.pointerEvents = 'none');
+            const correcta = preguntaActual.respuesta_correcta;
+            const esCorrecta = (letra === correcta);
+
+            document.getElementById('op_' + correcta).classList.add('correct');
+            if (!esCorrecta) {
+                document.getElementById('op_' + letra).classList.add('incorrect');
+            }
+            document.getElementById('explicacion').textContent = '💡 ' + preguntaActual.explicacion;
+            document.getElementById('explicacion').classList.remove('hidden');
+            document.getElementById('btnSiguiente').classList.remove('hidden');
+
+            // Incrementar contador si es GRATIS
+            if (usuarioData.tipo_cuenta === 'GRATIS') {
+                await incrementarRetos();
+            }
+        }
+
+        function volverTemas() {
+            document.getElementById('temasScreen').classList.remove('hidden');
+            document.getElementById('preguntaScreen').classList.add('hidden');
+            preguntaActual = null;
+            cargarTemas();
+        }
+
+        // --------------------------------------
+        // INICIALIZACIÓN
+        // --------------------------------------
+        cargarUsuario();
+        cargarTemas();
+    </script>
+</body>
+</html>

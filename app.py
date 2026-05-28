@@ -9,8 +9,9 @@ app = Flask(__name__)
 CORS(app)
 DB_NAME = 'master_ley.db'
 
-# Inicializar la base de datos al arrancar
-init_db()
+# ------------------------------------------------------------
+# FUNCIONES DE BASE DE DATOS (definidas primero)
+# ------------------------------------------------------------
 def get_db():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
@@ -87,7 +88,9 @@ def init_db():
         conn.commit()
     conn.close()
 
-# Rutas de la API
+# ------------------------------------------------------------
+# RUTAS DE LA API
+# ------------------------------------------------------------
 @app.route('/api/articulos', methods=['GET'])
 def get_articulos():
     conn = get_db()
@@ -179,5 +182,10 @@ def responder(usuario_id):
 def serve_frontend():
     return send_from_directory('.', 'index.html')
 
+# ------------------------------------------------------------
+# INICIALIZACIÓN DE LA BASE DE DATOS (se ejecuta al arrancar)
+# ------------------------------------------------------------
+init_db()
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))a
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

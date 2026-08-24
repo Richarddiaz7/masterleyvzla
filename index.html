@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Máster Ley Vzla IA</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Firebase SDKs (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --bg: #0f172a;
@@ -135,46 +138,104 @@
     </div>
 
     <script>
-        // Cambia esta URL por la de tu app en Render cuando la tengas
-        const API = 'https://masterleyvzla.onrender.com/api';
+        // --------------------------------------
+        // CONFIGURACIÓN DE FIREBASE
+        // --------------------------------------
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOecJaAR2WJ8MW-WRSEqoxUYGEgxenxK8",
+            authDomain: "masterleyvzla.firebaseapp.com",
+            projectId: "masterleyvzla",
+            storageBucket: "masterleyvzla.firebasestorage.app",
+            messagingSenderId: "178092366571",
+            appId: "1:178092366571:web:1c64f7cc911ceb6778bcae",
+            measurementId: "G-YV5TFKLBLQ"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --------------------------------------
+        // VARIABLES GLOBALES
+        // --------------------------------------
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        let usuarioId = tg.initDataUnsafe?.user?.id || 'demo_user';
+        let usuarioId = tg.initDataUnsafe?.user?.id ? String(tg.initDataUnsafe.user.id) : 'demo_user';
         let usuarioData = {};
         let preguntaActual = null;
 
+        // --------------------------------------
+        // FUNCIONES DE USUARIO
+        // --------------------------------------
         async function cargarUsuario() {
-            const resp = await fetch(`${API}/usuario/${usuarioId}`);
-            usuarioData = await resp.json();
+            const fechaHoy = new Date().toISOString().split('T')[0];
+            const userRef = db.collection('usuarios').doc(usuarioId);
+            const doc = await userRef.get();
+
+            if (!doc.exists) {
+                await userRef.set({
+                    nombre: tg.initDataUnsafe?.user?.first_name || 'Estudiante',
+                    tipo_cuenta: 'GRATIS',
+                    retos_respondidos_hoy: 0,
+                    ultimo_acceso: fechaHoy,
+                    tema_actual: null,
+                    rol: 'usuario'
+                });
+                usuarioData = (await userRef.get()).data();
+            } else {
+                usuarioData = doc.data();
+                if (usuarioData.ultimo_acceso !== fechaHoy) {
+                    await userRef.update({
+                        retos_respondidos_hoy: 0,
+                        ultimo_acceso: fechaHoy
+                    });
+                    usuarioData.retos_respondidos_hoy = 0;
+                    usuarioData.ultimo_acceso = fechaHoy;
+                }
+            }
             actualizarUI();
         }
 
         function actualizarUI() {
             const retos = usuarioData.retos_respondidos_hoy || 0;
             document.getElementById('retosHoy').textContent = retos;
-            document.getElementById('progresoFill').style.width = Math.min((retos/3)*100, 100) + '%';
+            document.getElementById('progresoFill').style.width = Math.min((retos / 3) * 100, 100) + '%';
             const badge = document.getElementById('badgeCuenta');
-            badge.innerHTML = usuarioData.tipo_cuenta === 'PREMIUM' ? 
-                '<span class="badge badge-premium">PREMIUM</span>' : 
+            badge.innerHTML = usuarioData.tipo_cuenta === 'PREMIUM' ?
+                '<span class="badge badge-premium">PREMIUM</span>' :
                 '<span class="badge badge-gratis">GRATIS</span>';
         }
 
+        async function incrementarRetos() {
+            const userRef = db.collection('usuarios').doc(usuarioId);
+            await userRef.update({
+                retos_respondidos_hoy: firebase.firestore.FieldValue.increment(1)
+            });
+            usuarioData.retos_respondidos_hoy++;
+            actualizarUI();
+        }
+
+        // --------------------------------------
+        // CARGAR TEMAS DESDE FIRESTORE
+        // --------------------------------------
         async function cargarTemas() {
-            const resp = await fetch(`${API}/articulos`);
-            const temas = await resp.json();
+            const snapshot = await db.collection('articulos').orderBy('numero', 'asc').get();
+            const temas = [];
+            snapshot.forEach(doc => temas.push({ id: doc.id, ...doc.data() }));
             document.getElementById('temasContainer').innerHTML = temas.map(t => `
-                <div class="card" onclick="seleccionarTema(${t.id})">
-                    <h2>📘 Art. ${t.numero}</h2>
+                <div class="card" onclick="seleccionarTema('${t.id}')">
+                    <h2>📘 Art. ${t.numero || t.id}</h2>
                     <p>${t.titulo}</p>
                 </div>
             `).join('');
         }
 
-        async function seleccionarTema(id) {
-            await fetch(`${API}/usuario/${usuarioId}/tema/${id}`, { method:'POST' });
-            await cargarUsuario();
+        async function seleccionarTema(articuloId) {
+            const userRef = db.collection('usuarios').doc(usuarioId);
+            await userRef.update({ tema_actual: Number(articuloId) });
+            usuarioData.tema_actual = Number(articuloId);
+
             if (usuarioData.tipo_cuenta === 'GRATIS' && usuarioData.retos_respondidos_hoy >= 3) {
                 alert('⚠️ Límite de 3 retos gratuitos alcanzado. Pásate a PREMIUM.');
                 return;
@@ -182,39 +243,58 @@
             cargarPregunta();
         }
 
+        // --------------------------------------
+        // CARGAR PREGUNTA ALEATORIA
+        // --------------------------------------
         async function cargarPregunta() {
-            const resp = await fetch(`${API}/pregunta/${usuarioId}`);
-            if (!resp.ok) {
+            if (!usuarioData.tema_actual) {
                 alert('Selecciona un tema primero.');
                 volverTemas();
                 return;
             }
-            preguntaActual = await resp.json();
+            const preguntasRef = db.collection('preguntas')
+                .where('articulo_id', '==', usuarioData.tema_actual);
+            const snapshot = await preguntasRef.get();
+            if (snapshot.empty) {
+                alert('No hay preguntas para este tema aún.');
+                volverTemas();
+                return;
+            }
+            const preguntas = [];
+            snapshot.forEach(doc => preguntas.push({ id: doc.id, ...doc.data() }));
+            const randomIndex = Math.floor(Math.random() * preguntas.length);
+            preguntaActual = preguntas[randomIndex];
+
             document.getElementById('temasScreen').classList.add('hidden');
             document.getElementById('preguntaScreen').classList.remove('hidden');
             document.getElementById('enunciado').textContent = preguntaActual.enunciado;
-            const opciones = ['A','B','C','D'];
+            const opciones = ['A', 'B', 'C', 'D'];
             document.getElementById('opcionesContainer').innerHTML = opciones.map(l => `
-                <div class="opcion" id="op_${l}" onclick="responder('${l}')">${l}) ${preguntaActual['opcion_'+l.toLowerCase()]}</div>
+                <div class="opcion" id="op_${l}" onclick="responder('${l}')">${l}) ${preguntaActual['opcion_' + l.toLowerCase()]}</div>
             `).join('');
             document.getElementById('explicacion').classList.add('hidden');
             document.getElementById('btnSiguiente').classList.add('hidden');
         }
 
+        // --------------------------------------
+        // RESPONDER Y ACTUALIZAR CONTADOR
+        // --------------------------------------
         async function responder(letra) {
             document.querySelectorAll('.opcion').forEach(o => o.style.pointerEvents = 'none');
-            const resp = await fetch(`${API}/responder/${usuarioId}`, {
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body: JSON.stringify({ pregunta_id: preguntaActual.id, respuesta: letra })
-            });
-            const r = await resp.json();
-            document.getElementById('op_'+r.respuesta_correcta).classList.add('correct');
-            if (!r.correcta) document.getElementById('op_'+letra).classList.add('incorrect');
-            document.getElementById('explicacion').textContent = '💡 ' + r.explicacion;
+            const correcta = preguntaActual.respuesta_correcta;
+            const esCorrecta = (letra === correcta);
+
+            document.getElementById('op_' + correcta).classList.add('correct');
+            if (!esCorrecta) {
+                document.getElementById('op_' + letra).classList.add('incorrect');
+            }
+            document.getElementById('explicacion').textContent = '💡 ' + preguntaActual.explicacion;
             document.getElementById('explicacion').classList.remove('hidden');
             document.getElementById('btnSiguiente').classList.remove('hidden');
-            await cargarUsuario();
+
+            if (usuarioData.tipo_cuenta === 'GRATIS') {
+                await incrementarRetos();
+            }
         }
 
         function volverTemas() {
@@ -224,9 +304,11 @@
             cargarTemas();
         }
 
-        // Inicio
+        // --------------------------------------
+        // INICIALIZACIÓN
+        // --------------------------------------
         cargarUsuario();
         cargarTemas();
     </script>
 </body>
-  </html>
+</html>

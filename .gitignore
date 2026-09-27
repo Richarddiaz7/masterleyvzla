@@ -1,0 +1,3 @@
+serviceAccount.json 
+*.json 
+!requirements.txt 

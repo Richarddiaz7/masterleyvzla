@@ -20,6 +20,7 @@
             --muted: #7a8fa8;
             --border: #294a6f;
             --header-gradient: linear-gradient(135deg, #0a2540 0%, #1e3a5f 100%);
+            --titulo-gradient: linear-gradient(135deg, #c9a227 0%, #8b6914 100%);
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
@@ -36,6 +37,7 @@
             --muted: #7a7a7a;
             --border: #d4d0c4;
             --header-gradient: linear-gradient(135deg, #f8f6f0 0%, #e8e4d8 100%);
+            --titulo-gradient: linear-gradient(135deg, #d4af37 0%, #8b6914 100%);
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
@@ -52,6 +54,9 @@
             min-height: 100vh;
         }
 
+        /* -------------------------------------- */
+        /* ENCABEZADO INSTITUCIONAL                */
+        /* -------------------------------------- */
         .header {
             background: var(--header-gradient);
             padding: 24px 16px;
@@ -94,6 +99,9 @@
             z-index: 1;
         }
 
+        /* -------------------------------------- */
+        /* BUSCADOR CON LUPA                       */
+        /* -------------------------------------- */
         .buscador-container {
             padding: 12px 16px;
             background: var(--bg-secondary);
@@ -151,12 +159,135 @@
             display: block;
         }
 
+        /* -------------------------------------- */
+        /* CONTENEDOR PRINCIPAL                    */
+        /* -------------------------------------- */
         .contenedor {
             padding: 16px;
             max-width: 800px;
             margin: 0 auto;
         }
 
+        /* -------------------------------------- */
+        /* ENCABEZADO DE TÍTULO (NO COLAPSABLE)    */
+        /* -------------------------------------- */
+        .titulo-constitucion {
+            background: var(--titulo-gradient);
+            color: #ffffff;
+            padding: 18px 16px;
+            border-radius: 12px;
+            margin: 20px 0 14px 0;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .titulo-constitucion::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .titulo-constitucion .num-titulo {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .titulo-constitucion .nombre-titulo {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            line-height: 1.3;
+            position: relative;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .titulo-constitucion .rango {
+            font-size: 11px;
+            margin-top: 8px;
+            opacity: 0.85;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* -------------------------------------- */
+        /* SUBGRUPO DE CAPÍTULO (COLAPSABLE)       */
+        /* -------------------------------------- */
+        .capitulo-grupo {
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--accent);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+            border: 1px solid var(--border);
+            border-left-width: 4px;
+        }
+
+        .capitulo-grupo:hover {
+            background: var(--card);
+        }
+
+        .capitulo-grupo h4 {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+
+        .capitulo-grupo .rango-cap {
+            color: var(--muted);
+            font-weight: normal;
+            font-size: 11px;
+            text-transform: none;
+            letter-spacing: 0;
+            margin-top: 2px;
+        }
+
+        .capitulo-grupo .flecha {
+            color: var(--muted);
+            transition: transform 0.2s;
+            font-size: 12px;
+        }
+
+        .capitulo-grupo.abierto .flecha {
+            transform: rotate(90deg);
+        }
+
+        .articulos-grupo {
+            margin-left: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .articulos-grupo.abierto {
+            display: block;
+        }
+
+        /* -------------------------------------- */
+        /* TARJETAS DE ARTÍCULOS                   */
+        /* -------------------------------------- */
         .articulo-card {
             background: var(--card);
             border-radius: 12px;
@@ -192,11 +323,6 @@
             margin-bottom: 4px;
         }
 
-        .articulo-capitulo {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
         .articulo-preview {
             font-size: 13px;
             color: var(--text-secondary);
@@ -208,6 +334,9 @@
             line-height: 1.4;
         }
 
+        /* -------------------------------------- */
+        /* VISTA DEL ARTÍCULO COMPLETO             */
+        /* -------------------------------------- */
         .vista-articulo {
             background: var(--card);
             border-radius: 12px;
@@ -241,8 +370,11 @@
         }
 
         .vista-articulo .capitulo-articulo {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.4;
         }
 
         .vista-articulo .texto-oficial {
@@ -253,6 +385,9 @@
             text-align: justify;
         }
 
+        /* -------------------------------------- */
+        /* BOTONES                                 */
+        /* -------------------------------------- */
         .btn {
             display: inline-block;
             padding: 12px 20px;
@@ -267,15 +402,6 @@
             margin-top: 10px;
         }
 
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-        }
-
         .btn-secondary {
             background: var(--card);
             color: var(--text);
@@ -286,6 +412,9 @@
             background: var(--card-hover);
         }
 
+        /* -------------------------------------- */
+        /* BARRA DE PESTAÑAS INFERIOR              */
+        /* -------------------------------------- */
         .tabs-bar {
             position: fixed;
             bottom: 0;
@@ -331,52 +460,9 @@
             display: block;
         }
 
-        .opciones {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 14px 0;
-        }
-
-        .opcion {
-            padding: 16px;
-            background: var(--card);
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text);
-            font-size: 14px;
-        }
-
-        .opcion:hover {
-            background: var(--card-hover);
-        }
-
-        .opcion.correct {
-            border-color: #10b981;
-            background: #064e3b;
-            color: #fff;
-        }
-
-        .opcion.incorrect {
-            border-color: #ef4444;
-            background: #7f1d1d;
-            color: #fff;
-        }
-
-        .explicacion-box {
-            background: var(--bg-secondary);
-            padding: 14px;
-            border-left: 4px solid var(--accent);
-            border-radius: 8px;
-            margin-top: 14px;
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
+        /* -------------------------------------- */
+        /* AJUSTES                                 */
+        /* -------------------------------------- */
         .ajuste-item {
             background: var(--card);
             border-radius: 12px;
@@ -442,6 +528,9 @@
             background-color: var(--bg);
         }
 
+        /* -------------------------------------- */
+        /* UTILIDADES                              */
+        /* -------------------------------------- */
         .hidden { display: none !important; }
 
         .mensaje-vacio {
@@ -460,48 +549,6 @@
             text-align: center;
             padding: 40px 20px;
             color: var(--muted);
-        }
-
-        .titulo-grupo {
-            background: var(--bg-secondary);
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            border-left: 4px solid var(--accent);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .titulo-grupo:hover {
-            background: var(--card);
-        }
-
-        .titulo-grupo h3 {
-            font-size: 14px;
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .titulo-grupo .flecha {
-            color: var(--muted);
-            transition: transform 0.2s;
-        }
-
-        .titulo-grupo.abierto .flecha {
-            transform: rotate(90deg);
-        }
-
-        .articulos-grupo {
-            margin-left: 8px;
-            margin-bottom: 16px;
-            display: none;
-        }
-
-        .articulos-grupo.abierto {
-            display: block;
         }
     </style>
 </head>
@@ -596,9 +643,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // --------------------------------------
+        // NOMBRES OFICIALES DE LOS TÍTULOS
+        // (Tomados de la Constitución, Gaceta Oficial N° 5.908)
+        // --------------------------------------
+        const NOMBRES_TITULOS = {
+            "Título I": "PRINCIPIOS FUNDAMENTALES",
+            "Título II": "DEL ESPACIO GEOGRÁFICO Y LA DIVISIÓN POLÍTICA",
+            "Título III": "DE LOS DERECHOS HUMANOS Y GARANTÍAS, Y DE LOS DEBERES",
+            "Título IV": "DEL PODER PÚBLICO",
+            "Título V": "DE LA ORGANIZACIÓN DEL PODER PÚBLICO NACIONAL",
+            "Título VI": "DEL SISTEMA SOCIOECONÓMICO",
+            "Título VII": "DE LA SEGURIDAD DE LA NACIÓN",
+            "Título VIII": "DE LA PROTECCIÓN DE ESTA CONSTITUCIÓN",
+            "Título IX": "DE LA REFORMA CONSTITUCIONAL"
+        };
+
         let todosLosArticulos = [];
         let articuloActual = null;
 
+        // --------------------------------------
+        // TEMA
+        // --------------------------------------
         function aplicarTema(temaOscuro) {
             if (temaOscuro) {
                 document.body.classList.remove('tema-claro');
@@ -615,26 +681,25 @@
             aplicarTema(esOscuro);
         }
 
+        // --------------------------------------
+        // NAVEGACIÓN
+        // --------------------------------------
         function cambiarPantalla(nombrePantalla) {
             document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
             document.getElementById('pantalla-' + nombrePantalla).classList.add('activa');
-
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('activo'));
             document.querySelector('.tab-item[data-pantalla="' + nombrePantalla + '"]').classList.add('activo');
-
-            if (nombrePantalla === 'constitucion') {
-                mostrarListado();
-            }
-
+            if (nombrePantalla === 'constitucion') mostrarListado();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         document.querySelectorAll('.tab-item').forEach(tab => {
-            tab.addEventListener('click', () => {
-                cambiarPantalla(tab.dataset.pantalla);
-            });
+            tab.addEventListener('click', () => cambiarPantalla(tab.dataset.pantalla));
         });
 
+        // --------------------------------------
+        // CARGAR ARTÍCULOS
+        // --------------------------------------
         async function cargarArticulos() {
             try {
                 const snapshot = await db.collection('articulos').orderBy('orden', 'asc').get();
@@ -654,6 +719,25 @@
             }
         }
 
+        // --------------------------------------
+        // AGRUPAR POR TÍTULO Y CAPÍTULO
+        // --------------------------------------
+        function extraerTitulo(capitulo) {
+            // El campo "capitulo" puede ser:
+            //   "Título I"
+            //   "Título III - Capítulo I: Disposiciones Generales"
+            const partes = capitulo.split(' - ');
+            return partes[0].trim(); // "Título I" o "Título III"
+        }
+
+        function extraerCapitulo(capitulo) {
+            const partes = capitulo.split(' - ');
+            if (partes.length > 1) {
+                return partes.slice(1).join(' - ').trim(); // "Capítulo I: Disposiciones Generales"
+            }
+            return null;
+        }
+
         function mostrarListado() {
             document.getElementById('contenedor-articulos').classList.remove('hidden');
             document.getElementById('contenedor-vista-articulo').classList.add('hidden');
@@ -665,47 +749,97 @@
                 return;
             }
 
-            const grupos = {};
+            // Agrupar por Título
+            const titulos = {};
             todosLosArticulos.forEach(art => {
-                const clave = art.capitulo || 'Sin capítulo';
-                if (!grupos[clave]) grupos[clave] = [];
-                grupos[clave].push(art);
+                const capCampo = art.capitulo || 'Sin título';
+                const titulo = extraerTitulo(capCampo);
+                const capituloInterno = extraerCapitulo(capCampo);
+                if (!titulos[titulo]) titulos[titulo] = { capitulos: {}, articulosDirectos: [] };
+                if (capituloInterno) {
+                    if (!titulos[titulo].capitulos[capituloInterno]) {
+                        titulos[titulo].capitulos[capituloInterno] = [];
+                    }
+                    titulos[titulo].capitulos[capituloInterno].push(art);
+                } else {
+                    titulos[titulo].articulosDirectos.push(art);
+                }
             });
 
             let html = '';
-            Object.keys(grupos).forEach(capitulo => {
-                const arts = grupos[capitulo];
-                const primerNum = arts[0].numero;
-                const ultimoNum = arts[arts.length - 1].numero;
+            Object.keys(titulos).forEach(titulo => {
+                const grupo = titulos[titulo];
+                // Calcular rango total del título
+                const todosArts = [
+                    ...grupo.articulosDirectos,
+                    ...Object.values(grupo.capitulos).flat()
+                ].sort((a, b) => a.numero - b.numero);
+                const primerNum = todosArts[0].numero;
+                const ultimoNum = todosArts[todosArts.length - 1].numero;
+                const nombreOficial = NOMBRES_TITULOS[titulo] || '';
+
+                // Encabezado del Título (NO colapsable)
                 html += `
-                    <div class="titulo-grupo" onclick="toggleGrupo(this)">
-                        <h3>📖 ${capitulo} <span style="color: var(--muted); font-weight: normal; font-size: 12px;">(${arts.length} arts. · ${primerNum}-${ultimoNum})</span></h3>
-                        <span class="flecha">▶</span>
-                    </div>
-                    <div class="articulos-grupo">
-                        ${arts.map(art => `
-                            <div class="articulo-card" onclick="verArticulo('${art.id}')">
-                                <span class="articulo-numero">Art. ${art.numero}</span>
-                                <div class="articulo-titulo">${art.titulo || ''}</div>
-                                <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 120)}...</div>
-                            </div>
-                        `).join('')}
+                    <div class="titulo-constitucion">
+                        <div class="num-titulo">${titulo.toUpperCase()}</div>
+                        ${nombreOficial ? `<div class="nombre-titulo">${nombreOficial}</div>` : ''}
+                        <div class="rango">${todosArts.length} artículos · Arts. ${primerNum} al ${ultimoNum}</div>
                     </div>
                 `;
+
+                // Artículos directos (Título sin capítulos)
+                if (grupo.articulosDirectos.length > 0) {
+                    html += grupo.articulosDirectos.map(art => `
+                        <div class="articulo-card" onclick="verArticulo('${art.id}')">
+                            <span class="articulo-numero">Art. ${art.numero}</span>
+                            <div class="articulo-titulo">${art.titulo || ''}</div>
+                            <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 120)}...</div>
+                        </div>
+                    `).join('');
+                }
+
+                // Capítulos internos (colapsables)
+                Object.keys(grupo.capitulos).forEach(capitulo => {
+                    const artsCap = grupo.capitulos[capitulo];
+                    const primerCap = artsCap[0].numero;
+                    const ultimoCap = artsCap[artsCap.length - 1].numero;
+                    html += `
+                        <div class="capitulo-grupo" onclick="toggleCapitulo(this)">
+                            <div>
+                                <h4>${capitulo}</h4>
+                                <div class="rango-cap">Arts. ${primerCap} al ${ultimoCap} · ${artsCap.length} artículos</div>
+                            </div>
+                            <span class="flecha">▶</span>
+                        </div>
+                        <div class="articulos-grupo">
+                            ${artsCap.map(art => `
+                                <div class="articulo-card" onclick="verArticulo('${art.id}')">
+                                    <span class="articulo-numero">Art. ${art.numero}</span>
+                                    <div class="articulo-titulo">${art.titulo || ''}</div>
+                                    <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 120)}...</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                });
             });
 
             contenedor.innerHTML = html;
 
-            const primerGrupo = contenedor.querySelector('.titulo-grupo');
-            if (primerGrupo) toggleGrupo(primerGrupo);
+            // Abrir el primer capítulo por defecto (si existe)
+            const primerCap = contenedor.querySelector('.capitulo-grupo');
+            if (primerCap) toggleCapitulo(primerCap);
         }
 
-        function toggleGrupo(el) {
+        function toggleCapitulo(el) {
             el.classList.toggle('abierto');
             const grupo = el.nextElementSibling;
             if (grupo) grupo.classList.toggle('abierto');
         }
 
+        // --------------------------------------
+        // VER ARTÍCULO INDIVIDUAL
+        // --------------------------------------
         function verArticulo(id) {
             const art = todosLosArticulos.find(a => a.id === id);
             if (!art) return;
@@ -729,6 +863,9 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // --------------------------------------
+        // BUSCADOR
+        // --------------------------------------
         function buscar(termino) {
             const contenedor = document.getElementById('contenedor-articulos');
             document.getElementById('contenedor-vista-articulo').classList.add('hidden');
@@ -772,6 +909,9 @@
             `;
         }
 
+        // --------------------------------------
+        // EVENTOS
+        // --------------------------------------
         document.getElementById('input-busqueda').addEventListener('input', (e) => {
             const valor = e.target.value;
             document.getElementById('btn-limpiar').classList.toggle('visible', valor.length > 0);
@@ -788,6 +928,9 @@
             aplicarTema(e.target.checked);
         });
 
+        // --------------------------------------
+        // INICIALIZACIÓN
+        // --------------------------------------
         cargarTemaGuardado();
         cargarArticulos();
     </script>

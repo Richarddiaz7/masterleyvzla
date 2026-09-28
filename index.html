@@ -223,7 +223,688 @@ Continuar con Google
 </div>
 
 <script>
-// AQUÍ VA LA PARTE 2
+// =====================================
+// FIREBASE
+// =====================================
+const firebaseConfig = {
+    apiKey: "AIzaSyCOecJaAR2WJ8MW-WRSEqoxUYGEgxenxK8",
+    authDomain: "masterleyvzla.firebaseapp.com",
+    projectId: "masterleyvzla",
+    storageBucket: "masterleyvzla.firebasestorage.app",
+    messagingSenderId: "178092366571",
+    appId: "1:178092366571:web:1c64f7cc911ceb6778bcae"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+// =====================================
+// ESTADO GLOBAL
+// =====================================
+let arts = [];
+let preguntas = [];
+let artActual = null;
+let usuarioActual = null;
+let esInvitado = false;
+
+const NOMBRES = {
+    "Título I":"PRINCIPIOS FUNDAMENTALES",
+    "Título II":"DEL ESPACIO GEOGRÁFICO Y LA DIVISIÓN POLÍTICA",
+    "Título III":"DE LOS DERECHOS HUMANOS Y GARANTÍAS, Y DE LOS DEBERES",
+    "Título IV":"DEL PODER PÚBLICO",
+    "Título V":"DE LA ORGANIZACIÓN DEL PODER PÚBLICO NACIONAL",
+    "Título VI":"DEL SISTEMA SOCIOECONÓMICO",
+    "Título VII":"DE LA SEGURIDAD DE LA NACIÓN",
+    "Título VIII":"DE LA PROTECCIÓN DE ESTA CONSTITUCIÓN",
+    "Título IX":"DE LA REFORMA CONSTITUCIONAL"
+};
+const ORDEN = ["Título I","Título II","Título III","Título IV","Título V","Título VI","Título VII","Título VIII","Título IX"];
+
+// =====================================
+// TEMA
+// =====================================
+function aplicarTema(oscuro){
+    if(oscuro) document.body.classList.remove('claro');
+    else document.body.classList.add('claro');
+    localStorage.setItem('tema_oscuro', oscuro ? '1' : '0');
+}
+function cargarTema(){
+    const g = localStorage.getItem('tema_oscuro');
+    const oscuro = g === null ? true : g === '1';
+    document.getElementById('switch-tema').checked = oscuro;
+    aplicarTema(oscuro);
+}
+document.getElementById('switch-tema').addEventListener('change', e => aplicarTema(e.target.checked));
+
+// =====================================
+// NAVEGACIÓN
+// =====================================
+function cambiarPantalla(n){
+    document.querySelectorAll('.pant').forEach(p => p.classList.remove('act'));
+    document.getElementById('pantalla-' + n).classList.add('act');
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
+    document.querySelector('.tab[data-pantalla="' + n + '"]').classList.add('act');
+    if(n === 'constitucion') mostrarListado();
+    if(n === 'perfil') mostrarPerfil();
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => cambiarPantalla(t.dataset.pantalla)));
+
+// =====================================
+// AUTENTICACIÓN
+// =====================================
+auth.onAuthStateChanged(async (user) => {
+    if(user){
+        usuarioActual = user;
+        esInvitado = user.isAnonymous;
+        await guardarOActualizarUsuario(user);
+        actualizarHeaderAuth();
+    } else {
+        usuarioActual = null;
+        esInvitado = false;
+        actualizarHeaderAuth();
+    }
+});
+
+async function guardarOActualizarUsuario(user){
+    try{
+        const ref = db.collection('usuarios').doc(user.uid);
+        const doc = await ref.get();
+        const hoy = new Date().toISOString().split('T')[0];
+        if(!doc.exists){
+            await ref.set({
+                nombre: user.displayName || (user.isAnonymous ? 'Invitado' : 'Usuario'),
+                email: user.email || '',
+                foto: user.photoURL || '',
+                rol: 'user',
+                tipo_cuenta: 'FREE',
+                articulos_leidos: [],
+                tests_por_articulo: {},
+                tests_completados: 0,
+                aciertos_totales: 0,
+                ultimo_acceso: hoy,
+                fecha_registro: hoy,
+                racha_dias: 1
+            });
+        } else {
+            await ref.update({ ultimo_acceso: hoy });
+        }
+    }catch(e){
+        console.error('Error guardando usuario:', e);
+    }
+}
+
+function actualizarHeaderAuth(){
+    const cont = document.getElementById('header-auth');
+    if(usuarioActual){
+        const nombre = usuarioActual.displayName || (esInvitado ? 'Invitado' : 'Usuario');
+        const foto = usuarioActual.photoURL;
+        cont.innerHTML = `
+            <button class="user-chip" onclick="cambiarPantalla('perfil')">
+                ${foto ? '<img src="'+foto+'">' : '👤'}
+                <span>${nombre.split(' ')[0]}</span>
+            </button>
+        `;
+    } else {
+        cont.innerHTML = `<button class="btn-login" onclick="abrirModalLogin()">🔐 Iniciar Sesión</button>`;
+    }
+}
+
+function abrirModalLogin(){ document.getElementById('modal-login').classList.remove('hidden'); }
+function cerrarModalLogin(){ document.getElementById('modal-login').classList.add('hidden'); }
+
+async function loginGoogle(){
+    try{
+        const provider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(provider);
+        cerrarModalLogin();
+    }catch(e){
+        console.error('Error login Google:', e);
+        alert('Error al iniciar sesión con Google: ' + e.message);
+    }
+}
+
+async function loginEmail(){
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    if(!email || !pass){ alert('Ingresa email y contraseña'); return; }
+    try{
+        await auth.signInWithEmailAndPassword(email, pass);
+        cerrarModalLogin();
+    }catch(e){
+        console.error('Error login Email:', e);
+        alert('Error: ' + e.message);
+    }
+}
+
+async function registroEmail(){
+    const email = document.getElementById('login-email').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    if(!email || !pass){ alert('Ingresa email y contraseña'); return; }
+    if(pass.length < 6){ alert('La contraseña debe tener al menos 6 caracteres'); return; }
+    try{
+        await auth.createUserWithEmailAndPassword(email, pass);
+        cerrarModalLogin();
+    }catch(e){
+        console.error('Error registro:', e);
+        alert('Error: ' + e.message);
+    }
+}
+
+async function loginInvitado(){
+    try{
+        await auth.signInAnonymously();
+        cerrarModalLogin();
+    }catch(e){
+        console.error('Error login invitado:', e);
+        alert('Error: ' + e.message);
+    }
+}
+
+async function cerrarSesion(){
+    if(confirm('¿Cerrar sesión?')){
+        await auth.signOut();
+        cambiarPantalla('constitucion');
+    }
+}
+
+// =====================================
+// CARGAR DATOS
+// =====================================
+async function cargarArticulos(){
+    try{
+        const snap = await db.collection('articulos').get();
+        arts = [];
+        snap.forEach(d => arts.push({id: d.id, ...d.data()}));
+        arts.sort((a,b) => (a.orden||0) - (b.orden||0));
+        mostrarListado();
+    }catch(e){
+        console.error('Error al cargar artículos:', e);
+        document.getElementById('contenedor-articulos').innerHTML = '<div class="msg-v"><div class="ic">⚠️</div><p>Error al cargar. Revisa tu conexión.</p></div>';
+    }
+}
+
+async function cargarPreguntas(){
+    try{
+        const snap = await db.collection('preguntas').get();
+        preguntas = [];
+        snap.forEach(d => preguntas.push({id: d.id, ...d.data()}));
+        console.log('✅ Preguntas cargadas:', preguntas.length);
+    }catch(e){
+        console.error('Error al cargar preguntas:', e);
+    }
+}
+
+// =====================================
+// UTILIDADES
+// =====================================
+function analizar(cap){
+    if(!cap || typeof cap !== 'string') return {titulo: 'Sin título', capitulo: null};
+    const partes = cap.split(' - ');
+    let tit = (partes[0]||'').trim();
+    if(!tit) tit = 'Sin título';
+    return {titulo: tit, capitulo: partes.length > 1 ? partes.slice(1).join(' - ').trim() : null};
+}
+
+function idSeguro(t){
+    if(!t || typeof t !== 'string') return 'sin-' + Math.random().toString(36).substr(2,9);
+    return (t.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'').toLowerCase()) || 'sin-' + Math.random().toString(36).substr(2,9);
+}
+
+// =====================================
+// LISTADO DE ARTÍCULOS
+// =====================================
+function mostrarListado(){
+    document.getElementById('contenedor-articulos').classList.remove('hidden');
+    document.getElementById('contenedor-vista-articulo').classList.add('hidden');
+    artActual = null;
+    const cont = document.getElementById('contenedor-articulos');
+    if(arts.length === 0){ cont.innerHTML = '<div class="carg">Cargando...</div>'; return; }
+
+    const grupos = {};
+    arts.forEach(a => {
+        const info = analizar(a.capitulo);
+        const k = info.titulo;
+        if(!grupos[k]) grupos[k] = {arts:[], caps:{}};
+        grupos[k].arts.push(a);
+        if(info.capitulo){
+            if(!grupos[k].caps[info.capitulo]) grupos[k].caps[info.capitulo] = [];
+            grupos[k].caps[info.capitulo].push(a);
+        }
+    });
+
+    const ord = Object.keys(grupos).sort((a,b) => {
+        const ia = ORDEN.indexOf(a), ib = ORDEN.indexOf(b);
+        if(ia === -1 && ib === -1) return a.localeCompare(b);
+        if(ia === -1) return 1;
+        if(ib === -1) return -1;
+        return ia - ib;
+    });
+
+    let html = '';
+    ord.forEach(nt => {
+        if(!nt || typeof nt !== 'string') return;
+        const g = grupos[nt];
+        if(!g || !g.arts || g.arts.length === 0) return;
+        const a0 = g.arts[0], aN = g.arts[g.arts.length-1];
+        const pn = a0 && a0.numero ? a0.numero : '?';
+        const un = aN && aN.numero ? aN.numero : '?';
+        const nc = NOMBRES[nt] || nt;
+        const tieneCaps = Object.keys(g.caps).length > 0;
+        const id = 'tit-' + idSeguro(nt);
+
+        html += '<div class="tit-enc" onclick="toggleT(this,\''+id+'\')"><div><div class="tit-num">'+nt.toUpperCase()+'</div><div class="tit-nom">'+nc+'</div></div><span class="fl">▶</span></div>';
+        html += '<div class="tit-cont" id="'+id+'">';
+
+        if(tieneCaps){
+            Object.keys(g.caps).forEach(nc2 => {
+                if(!nc2 || typeof nc2 !== 'string') return;
+                const ac = g.caps[nc2];
+                if(!ac || ac.length === 0) return;
+                const p2 = ac[0] && ac[0].numero ? ac[0].numero : '?';
+                const u2 = ac[ac.length-1] && ac[ac.length-1].numero ? ac[ac.length-1].numero : '?';
+                const idc = 'cap-' + idSeguro(nc2);
+                html += '<div class="cap-enc" onclick="toggleC(event,this,\''+idc+'\')"><div><div class="cap-nom">'+nc2.toUpperCase()+'</div><div class="cap-ran">'+ac.length+' artículos · '+p2+'-'+u2+'</div></div><span class="flc">▶</span></div>';
+                html += '<div class="cap-cont" id="'+idc+'">';
+                html += ac.map(a => renderCard(a)).join('');
+                html += '</div>';
+            });
+        } else {
+            html += g.arts.map(a => renderCard(a)).join('');
+        }
+        html += '</div>';
+    });
+
+    cont.innerHTML = html;
+    const prim = cont.querySelector('.tit-enc');
+    if(prim){
+        const m = (prim.getAttribute('onclick')||'').match(/'([^']+)'/);
+        if(m && m[1]) toggleT(prim, m[1]);
+    }
+}
+
+function renderCard(a){
+    const id = a.id || '';
+    const n = a.numero || '?';
+    const t = a.titulo || '';
+    const tx = a.texto_oficial || '';
+    return '<div class="art-card" onclick="verArt(\''+id+'\')"><span class="art-num">Art. '+n+'</span><div class="art-tit">'+t+'</div><div class="art-prev">'+tx.substring(0,120)+'...</div></div>';
+}
+
+function toggleT(el,id){
+    if(!el || !id) return;
+    el.classList.toggle('abierto');
+    const c = document.getElementById(id);
+    if(c) c.classList.toggle('abierto');
+}
+
+function toggleC(e,el,id){
+    if(e) e.stopPropagation();
+    if(!el || !id) return;
+    el.classList.toggle('abierto');
+    const c = document.getElementById(id);
+    if(c) c.classList.toggle('abierto');
+}
+
+// =====================================
+// VER ARTÍCULO
+// =====================================
+function verArt(id){
+    const a = arts.find(x => x.id === id);
+    if(!a) return;
+    artActual = a;
+    document.getElementById('contenedor-articulos').classList.add('hidden');
+    const v = document.getElementById('contenedor-vista-articulo');
+    v.classList.remove('hidden');
+
+    const numArt = a.numero || '?';
+    const tienePreg = preguntas.some(p => p.articulo_id === a.numero);
+
+    v.innerHTML = `
+        <div class="vista">
+            <div class="cab">
+                <span class="num-g">Artículo ${numArt}</span>
+                <div class="tit-a">${a.titulo||''}</div>
+                <div class="cap-a">${a.capitulo||''}</div>
+            </div>
+            <div class="tex">${a.texto_oficial||''}</div>
+            ${tienePreg ? '<button class="art-test-btn" onclick="iniciarTestArticulo('+numArt+')">📝 Hacer test de este artículo</button>' : ''}
+            <button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button>
+        </div>
+    `;
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// =====================================
+// TEST POR ARTÍCULO
+// =====================================
+let testActual = {preguntas:[], indice:0, puntaje:0, respondida:false, articulo:null};
+
+function iniciarTestArticulo(numArt){
+    const pregs = preguntas.filter(p => p.articulo_id === numArt);
+    if(pregs.length === 0){ alert('No hay preguntas para este artículo'); return; }
+    testActual = {preguntas: pregs, indice: 0, puntaje: 0, respondida: false, articulo: numArt};
+    mostrarPreguntaTest();
+}
+
+function mostrarPreguntaTest(){
+    const cont = document.getElementById('contenedor-vista-articulo');
+    const p = testActual.preguntas[testActual.indice];
+    if(!p){ mostrarResultadoTest(); return; }
+
+    const total = testActual.preguntas.length;
+    const prog = (testActual.indice / total) * 100;
+
+    cont.innerHTML = `
+        <div class="test-box">
+            <div class="test-prog">
+                <span>Pregunta ${testActual.indice+1} de ${total}</span>
+                <span>✅ ${testActual.puntaje} aciertos</span>
+            </div>
+            <div class="test-barra"><div class="test-barra-f" style="width:${prog}%"></div></div>
+            <div class="test-preg">${p.enunciado||''}</div>
+            <div class="test-ops">
+                <button class="test-op" data-op="A" onclick="responderTest('A')"><span class="letra">A</span><span>${p.opcion_a||''}</span></button>
+                <button class="test-op" data-op="B" onclick="responderTest('B')"><span class="letra">B</span><span>${p.opcion_b||''}</span></button>
+                <button class="test-op" data-op="C" onclick="responderTest('C')"><span class="letra">C</span><span>${p.opcion_c||''}</span></button>
+                <button class="test-op" data-op="D" onclick="responderTest('D')"><span class="letra">D</span><span>${p.opcion_d||''}</span></button>
+            </div>
+            <div id="test-respuesta"></div>
+        </div>
+    `;
+    testActual.respondida = false;
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function responderTest(op){
+    if(testActual.respondida) return;
+    testActual.respondida = true;
+
+    const p = testActual.preguntas[testActual.indice];
+    const correcta = p.respuesta_correcta || '';
+    const botones = document.querySelectorAll('.test-op');
+
+    botones.forEach(b => {
+        b.disabled = true;
+        const opBtn = b.getAttribute('data-op');
+        if(opBtn === correcta) b.classList.add('correcta');
+        if(opBtn === op && op !== correcta) b.classList.add('incorrecta');
+    });
+
+    if(op === correcta) testActual.puntaje++;
+
+    const esCorrecta = op === correcta;
+    const total = testActual.preguntas.length;
+    document.getElementById('test-respuesta').innerHTML = `
+        <div class="test-explic">
+            <strong style="color:${esCorrecta?'var(--verde)':'var(--rojo)'}">${esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto'}</strong><br>
+            <strong>Respuesta correcta:</strong> ${correcta}<br><br>
+            ${p.explicacion||''}
+        </div>
+        <button class="btn btn-prim" onclick="siguientePreguntaTest()">
+            ${testActual.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁'}
+        </button>
+    `;
+}
+
+function siguientePreguntaTest(){
+    testActual.indice++;
+    if(testActual.indice >= testActual.preguntas.length){
+        mostrarResultadoTest();
+    } else {
+        mostrarPreguntaTest();
+    }
+}
+
+async function mostrarResultadoTest(){
+    const total = testActual.preguntas.length;
+    const puntaje = testActual.puntaje;
+    const porcentaje = Math.round((puntaje/total)*100);
+    let emoji = '🎯', mensaje = '¡Sigue practicando!';
+    if(porcentaje >= 90){ emoji = '🏆'; mensaje = '¡Excelente! Eres un experto.'; }
+    else if(porcentaje >= 70){ emoji = '🥈'; mensaje = '¡Muy bien! Buen conocimiento.'; }
+    else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
+
+    const cont = document.getElementById('contenedor-vista-articulo');
+    cont.innerHTML = `
+        <div class="test-box test-resultado">
+            <div class="ic">${emoji}</div>
+            <h2>Test Completado</h2>
+            <div class="puntaje">${puntaje}/${total}</div>
+            <p>${mensaje}<br>${porcentaje}% de aciertos</p>
+            <button class="btn btn-prim" onclick="iniciarTestArticulo(${testActual.articulo})">🔄 Reintentar</button>
+            <button class="btn" onclick="verArt(arts.find(a=>a.numero===${testActual.articulo}).id)" style="margin-top:8px">⬅ Volver al artículo</button>
+        </div>
+    `;
+
+    // Guardar en usuario
+    if(usuarioActual){
+        try{
+            const ref = db.collection('usuarios').doc(usuarioActual.uid);
+            const doc = await ref.get();
+            const data = doc.data() || {};
+            const testsPorArt = data.tests_por_articulo || {};
+            const key = String(testActual.articulo);
+            const prev = testsPorArt[key] || {correctas: 0, total: 0};
+            testsPorArt[key] = {
+                correctas: Math.max(prev.correctas, puntaje),
+                total: total
+            };
+            await ref.update({
+                tests_por_articulo: testsPorArt,
+                tests_completados: (data.tests_completados || 0) + 1,
+                aciertos_totales: (data.aciertos_totales || 0) + puntaje
+            });
+        }catch(e){ console.error('Error guardando progreso:', e); }
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// =====================================
+// TEST LEGAL (aleatorio)
+// =====================================
+let testGlobal = {preguntas:[], indice:0, puntaje:0, respondida:false};
+
+function iniciarTestAleatorio(){
+    if(preguntas.length === 0){
+        document.getElementById('test-contenedor').innerHTML = '<div class="test-box test-inicio"><div class="ic">⚠️</div><h2>Sin preguntas</h2><p>No se pudieron cargar las preguntas.</p></div>';
+        return;
+    }
+    testGlobal = {
+        preguntas: preguntas.sort(() => Math.random()-0.5).slice(0,10),
+        indice: 0,
+        puntaje: 0,
+        respondida: false
+    };
+    mostrarPreguntaGlobal();
+}
+
+function mostrarPreguntaGlobal(){
+    const cont = document.getElementById('test-contenedor');
+    const p = testGlobal.preguntas[testGlobal.indice];
+    if(!p){ mostrarResultadoGlobal(); return; }
+
+    const total = testGlobal.preguntas.length;
+    const prog = (testGlobal.indice / total) * 100;
+
+    cont.innerHTML = `
+        <div class="test-box">
+            <div class="test-prog">
+                <span>Pregunta ${testGlobal.indice+1} de ${total}</span>
+                <span>✅ ${testGlobal.puntaje} aciertos</span>
+            </div>
+            <div class="test-barra"><div class="test-barra-f" style="width:${prog}%"></div></div>
+            <div class="test-preg">${p.enunciado||''}</div>
+            <div class="test-ops">
+                <button class="test-op" data-op="A" onclick="responderGlobal('A')"><span class="letra">A</span><span>${p.opcion_a||''}</span></button>
+                <button class="test-op" data-op="B" onclick="responderGlobal('B')"><span class="letra">B</span><span>${p.opcion_b||''}</span></button>
+                <button class="test-op" data-op="C" onclick="responderGlobal('C')"><span class="letra">C</span><span>${p.opcion_c||''}</span></button>
+                <button class="test-op" data-op="D" onclick="responderGlobal('D')"><span class="letra">D</span><span>${p.opcion_d||''}</span></button>
+            </div>
+            <div id="test-respuesta-global"></div>
+        </div>
+    `;
+    testGlobal.respondida = false;
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function responderGlobal(op){
+    if(testGlobal.respondida) return;
+    testGlobal.respondida = true;
+
+    const p = testGlobal.preguntas[testGlobal.indice];
+    const correcta = p.respuesta_correcta || '';
+    const botones = document.querySelectorAll('.test-op');
+
+    botones.forEach(b => {
+        b.disabled = true;
+        const opBtn = b.getAttribute('data-op');
+        if(opBtn === correcta) b.classList.add('correcta');
+        if(opBtn === op && op !== correcta) b.classList.add('incorrecta');
+    });
+
+    if(op === correcta) testGlobal.puntaje++;
+
+    const esCorrecta = op === correcta;
+    const total = testGlobal.preguntas.length;
+    document.getElementById('test-respuesta-global').innerHTML = `
+        <div class="test-explic">
+            <strong style="color:${esCorrecta?'var(--verde)':'var(--rojo)'}">${esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto'}</strong><br>
+            <strong>Respuesta correcta:</strong> ${correcta}<br><br>
+            ${p.explicacion||''}
+        </div>
+        <button class="btn btn-prim" onclick="siguientePreguntaGlobal()">
+            ${testGlobal.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁'}
+        </button>
+    `;
+}
+
+function siguientePreguntaGlobal(){
+    testGlobal.indice++;
+    if(testGlobal.indice >= testGlobal.preguntas.length){
+        mostrarResultadoGlobal();
+    } else {
+        mostrarPreguntaGlobal();
+    }
+}
+
+async function mostrarResultadoGlobal(){
+    const total = testGlobal.preguntas.length;
+    const puntaje = testGlobal.puntaje;
+    const porcentaje = Math.round((puntaje/total)*100);
+    let emoji = '🎯', mensaje = '¡Sigue practicando!';
+    if(porcentaje >= 90){ emoji = '🏆'; mensaje = '¡Excelente! Eres un experto.'; }
+    else if(porcentaje >= 70){ emoji = '🥈'; mensaje = '¡Muy bien! Buen conocimiento.'; }
+    else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
+
+    const cont = document.getElementById('test-contenedor');
+    cont.innerHTML = `
+        <div class="test-box test-resultado">
+            <div class="ic">${emoji}</div>
+            <h2>Test Legal Completado</h2>
+            <div class="puntaje">${puntaje}/${total}</div>
+            <p>${mensaje}<br>${porcentaje}% de aciertos</p>
+            <button class="btn btn-prim" onclick="iniciarTestAleatorio()">🔄 Reintentar</button>
+        </div>
+    `;
+
+    if(usuarioActual){
+        try{
+            const ref = db.collection('usuarios').doc(usuarioActual.uid);
+            const doc = await ref.get();
+            const data = doc.data() || {};
+            await ref.update({
+                tests_completados: (data.tests_completados || 0) + 1,
+                aciertos_totales: (data.aciertos_totales || 0) + puntaje
+            });
+        }catch(e){ console.error('Error guardando progreso:', e); }
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// =====================================
+// PERFIL
+// =====================================
+async function mostrarPerfil(){
+    const cont = document.getElementById('perfil-contenedor');
+    if(!usuarioActual){
+        cont.innerHTML = `
+            <div class="perfil-box">
+                <div class="ic" style="font-size:60px;margin-bottom:16px">👤</div>
+                <h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Mi Perfil</h2>
+                <p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Inicia sesión para guardar tu progreso</p>
+                <button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión</button>
+            </div>
+        `;
+        return;
+    }
+
+    try{
+        const doc = await db.collection('usuarios').doc(usuarioActual.uid).get();
+        const data = doc.data() || {};
+        const nombre = data.nombre || usuarioActual.displayName || 'Usuario';
+        const email = data.email || usuarioActual.email || (esInvitado ? 'Cuenta de invitado' : '');
+        const plan = data.tipo_cuenta || 'FREE';
+        const tests = data.tests_completados || 0;
+        const aciertos = data.aciertos_totales || 0;
+        const artsLeidos = (data.articulos_leidos || []).length;
+        const racha = data.racha_dias || 0;
+        const porcentaje = tests > 0 ? Math.round((aciertos / (tests * 10)) * 100) : 0;
+
+        const inicial = nombre.charAt(0).toUpperCase();
+
+        cont.innerHTML = `
+            <div class="perfil-box">
+                ${usuarioActual.photoURL ? '<img src="'+usuarioActual.photoURL+'">' : '<div class="perfil-avatar">'+inicial+'</div>'}
+                <div class="perfil-nombre">${nombre}</div>
+                <div class="perfil-email">${email}</div>
+                <div class="perfil-plan">${plan}</div>
+                <div class="stats-grid">
+                    <div class="stat-item"><span class="num">${artsLeidos}</span><span class="lbl">Artículos leídos</span></div>
+                    <div class="stat-item"><span class="num">${tests}</span><span class="lbl">Tests completados</span></div>
+                    <div class="stat-item"><span class="num">${porcentaje}%</span><span class="lbl">Aciertos</span></div>
+                    <div class="stat-item"><span class="num">${racha}</span><span class="lbl">Racha días</span></div>
+                </div>
+                <button class="btn" onclick="cerrarSesion()" style="margin-top:20px">🚪 Cerrar Sesión</button>
+            </div>
+        `;
+    }catch(e){
+        console.error('Error perfil:', e);
+        cont.innerHTML = '<div class="perfil-box"><p style="color:var(--rojo)">Error al cargar perfil</p></div>';
+    }
+}
+
+// =====================================
+// BUSCADOR
+// =====================================
+function buscar(t){
+    const cont = document.getElementById('contenedor-articulos');
+    document.getElementById('contenedor-vista-articulo').classList.add('hidden');
+    cont.classList.remove('hidden');
+    if(!t || t.trim() === ''){ mostrarListado(); return; }
+    const tt = t.toLowerCase().trim();
+    const res = arts.filter(a => {
+        const n = String(a.numero||'');
+        const ti = (a.titulo||'').toLowerCase();
+        const tx = (a.texto_oficial||'').toLowerCase();
+        const ca = (a.capitulo||'').toLowerCase();
+        return n.includes(tt) || ti.includes(tt) || tx.includes(tt) || ca.includes(tt);
+    });
+    if(res.length === 0){
+        cont.innerHTML = '<div class="msg-v"><div class="ic">🔍</div><p>No se encontraron artículos con "<strong>'+t+'</strong>"</p></div>';
+        return;
+    }
+    cont.innerHTML = '<div style="padding:8px 0;color:var(--mut);font-size:13px;margin-bottom:8px">'+res.length+' resultado(s) para "<strong style="color:var(--acc)">'+t+'</strong>"</div>' +
+        res.map(a => '<div class="art-card" onclick="verArt(\''+a.id+'\')"><span class="art-num">Art. '+(a.numero||'?')+'</span><div class="art-tit">'+(a.titulo||'')+'</div><div class="art-prev">'+(a.texto_oficial||'').substring(0,150)+'...</div></div>').join('');
+}
+document.getElementById('input-busqueda').addEventListener('input', e => buscar(e.target.value));
+
+// =====================================
+// INICIO
+// =====================================
+cargarTema();
+cargarArticulos();
+cargarPreguntas();
 </script>
 </body>
 </html>

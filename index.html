@@ -157,9 +157,7 @@
             margin: 0 auto;
         }
 
-        /* ====================================== */
-        /* ENCABEZADOS DE TÍTULO Y CAPÍTULO       */
-        /* ====================================== */
+        /* ENCABEZADOS DE TÍTULO */
         .titulo-encabezado {
             background: linear-gradient(135deg, #8b6914 0%, #c9a227 100%);
             color: #0a2540;
@@ -234,9 +232,7 @@
             display: block;
         }
 
-        /* ====================================== */
-        /* ENCABEZADOS DE CAPÍTULO                */
-        /* ====================================== */
+        /* ENCABEZADOS DE CAPÍTULO */
         .capitulo-encabezado {
             background: var(--bg-secondary);
             color: var(--accent);
@@ -291,9 +287,7 @@
             display: block;
         }
 
-        /* ====================================== */
-        /* TARJETAS DE ARTÍCULOS                  */
-        /* ====================================== */
+        /* TARJETAS DE ARTÍCULOS */
         .articulo-card {
             background: var(--bg-secondary);
             border-radius: 10px;
@@ -340,9 +334,7 @@
             line-height: 1.4;
         }
 
-        /* ====================================== */
-        /* VISTA DEL ARTÍCULO COMPLETO            */
-        /* ====================================== */
+        /* VISTA DEL ARTÍCULO COMPLETO */
         .vista-articulo {
             background: var(--card);
             border-radius: 12px;
@@ -422,9 +414,7 @@
             background: var(--card-hover);
         }
 
-        /* ====================================== */
-        /* BARRA INFERIOR DE PESTAÑAS             */
-        /* ====================================== */
+        /* BARRA INFERIOR DE PESTAÑAS */
         .tabs-bar {
             position: fixed;
             bottom: 0;
@@ -647,7 +637,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Diccionario con los nombres completos de los títulos de la Constitución
         const NOMBRES_TITULOS = {
             "Título I": "PRINCIPIOS FUNDAMENTALES",
             "Título II": "DEL ESPACIO GEOGRÁFICO Y LA DIVISIÓN POLÍTICA",
@@ -659,6 +648,8 @@
             "Título VIII": "DE LA PROTECCIÓN DE ESTA CONSTITUCIÓN",
             "Título IX": "DE LA REFORMA CONSTITUCIONAL"
         };
+
+        const ORDEN_TITULOS = ["Título I", "Título II", "Título III", "Título IV", "Título V", "Título VI", "Título VII", "Título VIII", "Título IX"];
 
         let todosLosArticulos = [];
         let articuloActual = null;
@@ -701,13 +692,12 @@
 
         async function cargarArticulos() {
             try {
-                // ✅ SIN orderBy para evitar el error de índice
                 const snapshot = await db.collection('articulos').get();
                 todosLosArticulos = [];
                 snapshot.forEach(doc => {
                     todosLosArticulos.push({ id: doc.id, ...doc.data() });
                 });
-                // ✅ Ordenamos manualmente en JavaScript
+                // Ordenar manualmente
                 todosLosArticulos.sort((a, b) => (a.orden || 0) - (b.orden || 0));
                 mostrarListado();
             } catch (error) {
@@ -721,15 +711,26 @@
             }
         }
 
-        // Extrae "Título X" y "Capítulo Y: ..." del campo capitulo
+        // ✅ FUNCIÓN BLINDADA - Nunca devuelve undefined
         function analizarCapitulo(capituloCompleto) {
-            if (!capituloCompleto) return { titulo: "Sin título", capitulo: null };
+            // Si no es string válido, devolvemos un objeto seguro
+            if (!capituloCompleto || typeof capituloCompleto !== 'string' || capituloCompleto.trim() === '') {
+                return { titulo: "Sin título", capitulo: null };
+            }
             
             const partes = capituloCompleto.split(' - ');
-            const titulo = partes[0].trim();
+            let titulo = (partes[0] || '').trim();
+            if (!titulo) titulo = "Sin título";
+            
             const capitulo = partes.length > 1 ? partes.slice(1).join(' - ').trim() : null;
             
-            return { titulo, capitulo };
+            return { titulo, capitulo: capitulo || null };
+        }
+
+        // ✅ FUNCIÓN BLINDADA - Genera un ID seguro sin fallar
+        function generarIdSeguro(texto) {
+            if (!texto || typeof texto !== 'string') return 'sin-id-' + Math.random().toString(36).substr(2, 9);
+            return texto.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase() || 'sin-id';
         }
 
         function mostrarListado() {
@@ -747,34 +748,45 @@
             const titulos = {};
             todosLosArticulos.forEach(art => {
                 const info = analizarCapitulo(art.capitulo);
-                if (!titulos[info.titulo]) {
-                    titulos[info.titulo] = { nombre: info.titulo, articulos: [], capitulos: {} };
+                const claveTitulo = info.titulo || "Sin título";
+                
+                if (!titulos[claveTitulo]) {
+                    titulos[claveTitulo] = { nombre: claveTitulo, articulos: [], capitulos: {} };
                 }
-                titulos[info.titulo].articulos.push(art);
+                titulos[claveTitulo].articulos.push(art);
                 
                 if (info.capitulo) {
-                    if (!titulos[info.titulo].capitulos[info.capitulo]) {
-                        titulos[info.titulo].capitulos[info.capitulo] = [];
+                    if (!titulos[claveTitulo].capitulos[info.capitulo]) {
+                        titulos[claveTitulo].capitulos[info.capitulo] = [];
                     }
-                    titulos[info.titulo].capitulos[info.capitulo].push(art);
+                    titulos[claveTitulo].capitulos[info.capitulo].push(art);
                 }
             });
 
-            // Ordenar títulos por número romano (I, II, III...)
-            const ordenTitulos = ["Título I", "Título II", "Título III", "Título IV", "Título V", "Título VI", "Título VII", "Título VIII", "Título IX"];
+            // Ordenar títulos
             const titulosOrdenados = Object.keys(titulos).sort((a, b) => {
-                return ordenTitulos.indexOf(a) - ordenTitulos.indexOf(b);
+                const ia = ORDEN_TITULOS.indexOf(a);
+                const ib = ORDEN_TITULOS.indexOf(b);
+                if (ia === -1 && ib === -1) return a.localeCompare(b);
+                if (ia === -1) return 1;
+                if (ib === -1) return -1;
+                return ia - ib;
             });
 
             let html = '';
             titulosOrdenados.forEach(nombreTitulo => {
+                // ✅ DOBLE BLINDAJE
+                if (!nombreTitulo || typeof nombreTitulo !== 'string') return;
+                
                 const info = titulos[nombreTitulo];
+                if (!info || !info.articulos || info.articulos.length === 0) return;
+                
                 const arts = info.articulos;
-                const primerNum = arts[0].numero;
-                const ultimoNum = arts[arts.length - 1].numero;
-                const nombreCompleto = NOMBRES_TITULOS[nombreTitulo] || '';
+                const primerNum = arts[0] && arts[0].numero ? arts[0].numero : '?';
+                const ultimoNum = arts[arts.length - 1] && arts[arts.length - 1].numero ? arts[arts.length - 1].numero : '?';
+                const nombreCompleto = NOMBRES_TITULOS[nombreTitulo] || nombreTitulo;
                 const tieneCapitulos = Object.keys(info.capitulos).length > 0;
-                const idUnico = 'titulo-' + nombreTitulo.replace(/\s+/g, '-').toLowerCase();
+                const idUnico = 'titulo-' + generarIdSeguro(nombreTitulo);
 
                 html += `
                     <div class="titulo-encabezado" onclick="toggleTitulo(this, '${idUnico}')">
@@ -788,13 +800,16 @@
                 `;
 
                 if (tieneCapitulos) {
-                    // Mostrar subgrupos por capítulo
                     const capsOrdenados = Object.keys(info.capitulos);
                     capsOrdenados.forEach(nombreCap => {
+                        if (!nombreCap || typeof nombreCap !== 'string') return;
+                        
                         const artsCap = info.capitulos[nombreCap];
-                        const primerNumCap = artsCap[0].numero;
-                        const ultimoNumCap = artsCap[artsCap.length - 1].numero;
-                        const idCap = 'cap-' + nombreCap.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase();
+                        if (!artsCap || artsCap.length === 0) return;
+                        
+                        const primerNumCap = artsCap[0] && artsCap[0].numero ? artsCap[0].numero : '?';
+                        const ultimoNumCap = artsCap[artsCap.length - 1] && artsCap[artsCap.length - 1].numero ? artsCap[artsCap.length - 1].numero : '?';
+                        const idCap = 'cap-' + generarIdSeguro(nombreCap);
 
                         html += `
                             <div class="capitulo-encabezado" onclick="toggleCapitulo(event, this, '${idCap}')">
@@ -810,7 +825,6 @@
                         `;
                     });
                 } else {
-                    // Sin capítulos: mostrar artículos directamente
                     html += arts.map(art => renderArticuloCard(art)).join('');
                 }
 
@@ -822,29 +836,38 @@
             // Abrir el primer título automáticamente
             const primerTitulo = contenedor.querySelector('.titulo-encabezado');
             if (primerTitulo) {
-                const idUnico = primerTitulo.getAttribute('onclick').match(/'([^']+)'/g)[1].replace(/'/g, '');
-                toggleTitulo(primerTitulo, idUnico);
+                const onclickAttr = primerTitulo.getAttribute('onclick') || '';
+                const match = onclickAttr.match(/'([^']+)'/);
+                if (match && match[1]) {
+                    toggleTitulo(primerTitulo, match[1]);
+                }
             }
         }
 
         function renderArticuloCard(art) {
+            const id = art.id || '';
+            const numero = art.numero || '?';
+            const titulo = art.titulo || '';
+            const texto = art.texto_oficial || '';
             return `
-                <div class="articulo-card" onclick="verArticulo('${art.id}')">
-                    <span class="articulo-numero">Art. ${art.numero}</span>
-                    <div class="articulo-titulo">${art.titulo || ''}</div>
-                    <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 120)}...</div>
+                <div class="articulo-card" onclick="verArticulo('${id}')">
+                    <span class="articulo-numero">Art. ${numero}</span>
+                    <div class="articulo-titulo">${titulo}</div>
+                    <div class="articulo-preview">${texto.substring(0, 120)}...</div>
                 </div>
             `;
         }
 
         function toggleTitulo(el, idContenido) {
+            if (!el || !idContenido) return;
             el.classList.toggle('abierto');
             const contenido = document.getElementById(idContenido);
             if (contenido) contenido.classList.toggle('abierto');
         }
 
         function toggleCapitulo(event, el, idContenido) {
-            event.stopPropagation();
+            if (event) event.stopPropagation();
+            if (!el || !idContenido) return;
             el.classList.toggle('abierto');
             const contenido = document.getElementById(idContenido);
             if (contenido) contenido.classList.toggle('abierto');
@@ -862,7 +885,7 @@
             vista.innerHTML = `
                 <div class="vista-articulo">
                     <div class="cabecera">
-                        <span class="numero-grande">Artículo ${art.numero}</span>
+                        <span class="numero-grande">Artículo ${art.numero || '?'}</span>
                         <div class="titulo-articulo">${art.titulo || ''}</div>
                         <div class="capitulo-articulo">${art.capitulo || ''}</div>
                     </div>
@@ -908,7 +931,7 @@
                 </div>
                 ${resultados.map(art => `
                     <div class="articulo-card" onclick="verArticulo('${art.id}')">
-                        <span class="articulo-numero">Art. ${art.numero}</span>
+                        <span class="articulo-numero">Art. ${art.numero || '?'}</span>
                         <div class="articulo-titulo">${art.titulo || ''}</div>
                         <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 150)}...</div>
                     </div>

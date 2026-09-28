@@ -1,962 +1,229 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Máster Ley Vzla IA</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <style>
-        :root {
-            --bg: #0a2540;
-            --bg-secondary: #0f2d4a;
-            --card: #1e3a5f;
-            --card-hover: #294a6f;
-            --accent: #c9a227;
-            --accent-hover: #d4af37;
-            --text: #e8eef5;
-            --text-secondary: #b0c4de;
-            --muted: #7a8fa8;
-            --border: #294a6f;
-            --header-gradient: linear-gradient(135deg, #0a2540 0%, #1e3a5f 100%);
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
-        }
-
-        body.tema-claro {
-            --bg: #f8f6f0;
-            --bg-secondary: #ffffff;
-            --card: #ffffff;
-            --card-hover: #f0ede4;
-            --accent: #8b6914;
-            --accent-hover: #a67c00;
-            --text: #1a1a1a;
-            --text-secondary: #4a4a4a;
-            --muted: #7a7a7a;
-            --border: #d4d0c4;
-            --header-gradient: linear-gradient(135deg, #f8f6f0 0%, #e8e4d8 100%);
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            padding: 0 0 80px 0;
-            line-height: 1.5;
-            transition: background 0.3s, color 0.3s;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: var(--header-gradient);
-            padding: 24px 16px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 3px solid var(--accent);
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(201, 162, 39, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(45, 106, 79, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            color: var(--accent);
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.5px;
-        }
-
-        .header .subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            position: relative;
-            z-index: 1;
-            margin-top: 4px;
-        }
-
-        .header .escudo {
-            font-size: 36px;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .buscador-container {
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .buscador-wrapper {
-            display: flex;
-            align-items: center;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 14px;
-            transition: border-color 0.2s;
-        }
-
-        .buscador-wrapper:focus-within {
-            border-color: var(--accent);
-        }
-
-        .buscador-wrapper .lupa {
-            font-size: 18px;
-            margin-right: 8px;
-            opacity: 0.7;
-        }
-
-        .buscador-wrapper input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: var(--text);
-            font-size: 15px;
-            font-family: inherit;
-        }
-
-        .buscador-wrapper input::placeholder {
-            color: var(--muted);
-        }
-
-        .btn-limpiar {
-            background: transparent;
-            border: none;
-            color: var(--muted);
-            font-size: 18px;
-            cursor: pointer;
-            padding: 0 4px;
-            display: none;
-        }
-
-        .btn-limpiar.visible {
-            display: block;
-        }
-
-        .contenedor {
-            padding: 16px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* ENCABEZADOS DE TÍTULO */
-        .titulo-encabezado {
-            background: linear-gradient(135deg, #8b6914 0%, #c9a227 100%);
-            color: #0a2540;
-            padding: 14px 18px;
-            border-radius: 12px;
-            margin-top: 20px;
-            margin-bottom: 14px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.25s;
-            box-shadow: 0 4px 16px rgba(201, 162, 39, 0.25);
-            border: 1px solid #d4af37;
-        }
-
-        .titulo-encabezado:first-child {
-            margin-top: 0;
-        }
-
-        .titulo-encabezado:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(201, 162, 39, 0.35);
-        }
-
-        .titulo-encabezado.abierto {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            margin-bottom: 0;
-        }
-
-        .titulo-encabezado .titulo-numero {
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 1.5px;
-            color: #4a3708;
-            margin-bottom: 2px;
-        }
-
-        .titulo-encabezado .titulo-nombre {
-            font-size: 14px;
-            font-weight: bold;
-            color: #0a2540;
-            letter-spacing: 0.5px;
-            line-height: 1.3;
-            text-transform: uppercase;
-        }
-
-        .titulo-encabezado .flecha {
-            font-size: 14px;
-            transition: transform 0.25s;
-            color: #4a3708;
-        }
-
-        .titulo-encabezado.abierto .flecha {
-            transform: rotate(90deg);
-        }
-
-        .titulo-contenido {
-            display: none;
-            background: var(--card);
-            border: 1px solid var(--accent);
-            border-top: none;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-            padding: 14px;
-            margin-bottom: 14px;
-            box-shadow: var(--shadow);
-        }
-
-        .titulo-contenido.abierto {
-            display: block;
-        }
-
-        /* ENCABEZADOS DE CAPÍTULO */
-        .capitulo-encabezado {
-            background: var(--bg-secondary);
-            color: var(--accent);
-            padding: 10px 14px;
-            border-left: 4px solid var(--accent);
-            border-radius: 6px;
-            margin-bottom: 8px;
-            margin-top: 10px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .capitulo-encabezado:hover {
-            background: var(--card-hover);
-        }
-
-        .capitulo-encabezado .capitulo-nombre {
-            font-size: 13px;
-            font-weight: bold;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-        }
-
-        .capitulo-encabezado .capitulo-rango {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 2px;
-            font-weight: normal;
-            text-transform: none;
-        }
-
-        .capitulo-encabezado .flecha-cap {
-            font-size: 12px;
-            transition: transform 0.25s;
-            color: var(--muted);
-        }
-
-        .capitulo-encabezado.abierto .flecha-cap {
-            transform: rotate(90deg);
-        }
-
-        .capitulo-contenido {
-            display: none;
-            margin-bottom: 12px;
-            margin-left: 4px;
-        }
-
-        .capitulo-contenido.abierto {
-            display: block;
-        }
-
-        /* TARJETAS DE ARTÍCULOS */
-        .articulo-card {
-            background: var(--bg-secondary);
-            border-radius: 10px;
-            padding: 14px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow);
-        }
-
-        .articulo-card:hover {
-            background: var(--card-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .articulo-numero {
-            display: inline-block;
-            background: var(--accent);
-            color: var(--bg);
-            font-weight: bold;
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-        }
-
-        .articulo-titulo {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .articulo-preview {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 6px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            line-height: 1.4;
-        }
-
-        /* VISTA DEL ARTÍCULO COMPLETO */
-        .vista-articulo {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .vista-articulo .cabecera {
-            border-bottom: 2px solid var(--accent);
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .vista-articulo .numero-grande {
-            display: inline-block;
-            background: var(--accent);
-            color: var(--bg);
-            font-weight: bold;
-            font-size: 15px;
-            padding: 6px 16px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .vista-articulo .titulo-articulo {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        .vista-articulo .capitulo-articulo {
-            font-size: 12px;
-            color: var(--muted);
-            font-style: italic;
-        }
-
-        .vista-articulo .texto-oficial {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text);
-            white-space: pre-wrap;
-            text-align: justify;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: var(--bg);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-        }
-
-        .btn-secondary {
-            background: var(--card);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            background: var(--card-hover);
-        }
-
-        /* BARRA INFERIOR DE PESTAÑAS */
-        .tabs-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 10px;
-            z-index: 100;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .tab-item {
-            flex: 1;
-            text-align: center;
-            padding: 6px 4px;
-            cursor: pointer;
-            color: var(--muted);
-            font-size: 11px;
-            transition: color 0.2s;
-            background: transparent;
-            border: none;
-            font-family: inherit;
-        }
-
-        .tab-item.activo {
-            color: var(--accent);
-        }
-
-        .tab-item .tab-icono {
-            display: block;
-            font-size: 20px;
-            margin-bottom: 2px;
-        }
-
-        .pantalla {
-            display: none;
-        }
-
-        .pantalla.activa {
-            display: block;
-        }
-
-        .ajuste-item {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ajuste-info h3 {
-            font-size: 15px;
-            color: var(--text);
-            margin-bottom: 2px;
-        }
-
-        .ajuste-info p {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--border);
-            transition: .3s;
-            border-radius: 26px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 3px;
-            bottom: 3px;
-            background-color: var(--text);
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        .switch input:checked + .slider {
-            background-color: var(--accent);
-        }
-
-        .switch input:checked + .slider:before {
-            transform: translateX(24px);
-            background-color: var(--bg);
-        }
-
-        .hidden { display: none !important; }
-
-        .mensaje-vacio {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted);
-        }
-
-        .mensaje-vacio .icono {
-            font-size: 48px;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
-
-        .cargando {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--muted);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Máster Ley Vzla IA</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<style>
+:root{--bg:#0a2540;--bg2:#0f2d4a;--card:#1e3a5f;--cardh:#294a6f;--acc:#c9a227;--acch:#d4af37;--txt:#e8eef5;--txt2:#b0c4de;--mut:#7a8fa8;--bor:#294a6f;--sh:0 4px 12px rgba(0,0,0,.3);--verde:#10b981;--rojo:#ef4444}
+body.claro{--bg:#f8f6f0;--bg2:#fff;--card:#fff;--cardh:#f0ede4;--acc:#8b6914;--acch:#a67c00;--txt:#1a1a1a;--txt2:#4a4a4a;--mut:#7a7a7a;--bor:#d4d0c4;--sh:0 4px 12px rgba(0,0,0,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);padding:0 0 80px;line-height:1.5;min-height:100vh}
+.header{background:linear-gradient(135deg,#0a2540,#1e3a5f);padding:24px 16px;text-align:center;border-bottom:3px solid var(--acc);position:relative}
+body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
+.header h1{font-size:24px;color:var(--acc);margin-bottom:4px}
+.header .sub{font-size:13px;color:var(--txt2)}
+.header .esc{font-size:36px;margin-bottom:8px}
+.header .btn-login{position:absolute;top:16px;right:16px;background:var(--acc);color:var(--bg);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.header .btn-login:hover{background:var(--acch)}
+.header .user-chip{position:absolute;top:16px;right:16px;background:var(--card);border:1px solid var(--acc);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--txt);display:flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit}
+.header .user-chip img{width:24px;height:24px;border-radius:50%}
+.busq{padding:12px 16px;background:var(--bg2);position:sticky;top:0;z-index:10;border-bottom:1px solid var(--bor)}
+.busq-w{display:flex;align-items:center;background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:10px 14px}
+.busq-w input{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:15px;font-family:inherit}
+.busq-w input::placeholder{color:var(--mut)}
+.cont{padding:16px;max-width:800px;margin:0 auto}
+.tit-enc{background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;padding:14px 18px;border-radius:12px;margin-top:20px;margin-bottom:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 16px rgba(201,162,39,.25);border:1px solid #d4af37}
+.tit-enc:first-child{margin-top:0}
+.tit-enc.abierto{border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0}
+.tit-num{font-size:12px;font-weight:bold;letter-spacing:1.5px;color:#4a3708;margin-bottom:2px}
+.tit-nom{font-size:14px;font-weight:bold;color:#0a2540;letter-spacing:.5px;text-transform:uppercase}
+.tit-enc .fl{font-size:14px;transition:transform .25s;color:#4a3708}
+.tit-enc.abierto .fl{transform:rotate(90deg)}
+.tit-cont{display:none;background:var(--card);border:1px solid var(--acc);border-top:none;border-bottom-left-radius:12px;border-bottom-right-radius:12px;padding:14px;margin-bottom:14px}
+.tit-cont.abierto{display:block}
+.cap-enc{background:var(--bg2);color:var(--acc);padding:10px 14px;border-left:4px solid var(--acc);border-radius:6px;margin:10px 0 8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.cap-nom{font-size:13px;font-weight:bold;text-transform:uppercase}
+.cap-ran{font-size:11px;color:var(--mut);margin-top:2px;font-weight:normal;text-transform:none}
+.cap-enc .flc{font-size:12px;transition:transform .25s;color:var(--mut)}
+.cap-enc.abierto .flc{transform:rotate(90deg)}
+.cap-cont{display:none;margin-bottom:12px;margin-left:4px}
+.cap-cont.abierto{display:block}
+.art-card{background:var(--bg2);border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid var(--bor);cursor:pointer;transition:all .2s;box-shadow:var(--sh)}
+.art-card:hover{background:var(--cardh);transform:translateY(-2px)}
+.art-num{display:inline-block;background:var(--acc);color:var(--bg);font-weight:bold;font-size:11px;padding:3px 10px;border-radius:6px;margin-bottom:6px}
+.art-tit{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px}
+.art-prev{font-size:12px;color:var(--txt2);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.4}
+.vista{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor)}
+.vista .cab{border-bottom:2px solid var(--acc);padding-bottom:12px;margin-bottom:16px}
+.vista .num-g{display:inline-block;background:var(--acc);color:var(--bg);font-weight:bold;font-size:15px;padding:6px 16px;border-radius:8px;margin-bottom:10px}
+.vista .tit-a{font-size:17px;font-weight:600;color:var(--txt);margin-bottom:4px}
+.vista .cap-a{font-size:12px;color:var(--mut);font-style:italic}
+.vista .tex{font-size:15px;line-height:1.8;color:var(--txt);white-space:pre-wrap;text-align:justify}
+.btn{display:inline-block;padding:12px 20px;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;margin-top:10px;background:var(--card);color:var(--txt);border:1px solid var(--bor)}
+.btn:hover{background:var(--cardh)}
+.btn-prim{background:var(--acc);color:var(--bg);border:none}
+.btn-prim:hover{background:var(--acch)}
+.btn-google{background:#fff;color:#333;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-google:hover{background:#f5f5f5}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--bor);display:flex;justify-content:space-around;padding:8px 0 10px;z-index:100}
+.tab{flex:1;text-align:center;padding:6px 4px;cursor:pointer;color:var(--mut);font-size:11px;background:transparent;border:none;font-family:inherit}
+.tab.act{color:var(--acc)}
+.tab .ic{display:block;font-size:20px;margin-bottom:2px}
+.pant{display:none}
+.pant.act{display:block}
+.hidden{display:none!important}
+.msg-v{text-align:center;padding:40px 20px;color:var(--mut)}
+.msg-v .ic{font-size:48px;margin-bottom:12px;opacity:.5}
+.carg{text-align:center;padding:40px 20px;color:var(--mut)}
+
+/* MODAL LOGIN */
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal.hidden{display:none!important}
+.modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center}
+.modal-box .ic{font-size:48px;margin-bottom:12px}
+.modal-box h2{color:var(--acc);font-size:20px;margin-bottom:8px}
+.modal-box p{color:var(--txt2);font-size:13px;margin-bottom:20px}
+.modal-box .btn{margin-top:10px}
+.modal-box input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--bor);background:var(--bg2);color:var(--txt);font-size:15px;font-family:inherit;margin-top:8px;outline:none}
+.modal-box input:focus{border-color:var(--acc)}
+.modal-cerrar{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--mut);font-size:24px;cursor:pointer}
+.divisor{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--mut);font-size:12px}
+.divisor::before,.divisor::after{content:'';flex:1;height:1px;background:var(--bor)}
+
+/* TEST LEGAL */
+.test-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor)}
+.test-inicio{text-align:center;padding:30px 20px}
+.test-inicio .ic{font-size:60px;margin-bottom:16px}
+.test-inicio h2{color:var(--acc);font-size:22px;margin-bottom:10px}
+.test-inicio p{color:var(--txt2);font-size:14px;margin-bottom:20px}
+.test-prog{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:13px;color:var(--mut)}
+.test-barra{height:6px;background:var(--bor);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.test-barra-f{height:100%;background:var(--acc);transition:width .3s}
+.test-preg{font-size:16px;font-weight:600;color:var(--txt);margin-bottom:18px;line-height:1.5}
+.test-ops{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.test-op{padding:14px 16px;background:var(--bg2);border:2px solid var(--bor);border-radius:10px;cursor:pointer;transition:all .2s;font-size:14px;color:var(--txt);text-align:left;font-family:inherit;display:flex;align-items:center;gap:10px}
+.test-op:hover{background:var(--cardh);border-color:var(--acc)}
+.test-op .letra{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--bor);border-radius:50%;font-weight:bold;font-size:13px;flex-shrink:0}
+.test-op.correcta{border-color:var(--verde);background:rgba(16,185,129,.15)}
+.test-op.correcta .letra{background:var(--verde);color:#fff}
+.test-op.incorrecta{border-color:var(--rojo);background:rgba(239,68,68,.15)}
+.test-op.incorrecta .letra{background:var(--rojo);color:#fff}
+.test-op:disabled{cursor:default;opacity:.85}
+.test-explic{background:var(--bg2);padding:14px;border-left:4px solid var(--acc);border-radius:8px;margin-bottom:16px;font-size:14px;color:var(--txt2);line-height:1.6}
+.test-resultado{text-align:center;padding:30px 20px}
+.test-resultado .ic{font-size:60px;margin-bottom:16px}
+.test-resultado h2{color:var(--acc);font-size:24px;margin-bottom:10px}
+.test-resultado .puntaje{font-size:48px;font-weight:bold;color:var(--acc);margin:16px 0}
+.test-resultado p{color:var(--txt2);font-size:15px;margin-bottom:20px}
+.art-test-btn{background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;width:100%;margin-top:16px;font-family:inherit}
+
+/* PERFIL */
+.perfil-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor);text-align:center}
+.perfil-avatar{width:80px;height:80px;border-radius:50%;background:var(--acc);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;font-weight:bold}
+.perfil-box img{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:block}
+.perfil-nombre{font-size:18px;font-weight:bold;color:var(--txt);margin-bottom:4px}
+.perfil-email{font-size:13px;color:var(--mut);margin-bottom:16px}
+.perfil-plan{display:inline-block;background:var(--acc);color:var(--bg);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.stat-item{background:var(--bg2);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--bor)}
+.stat-item .num{font-size:24px;font-weight:bold;color:var(--acc);display:block}
+.stat-item .lbl{font-size:11px;color:var(--mut);margin-top:4px}
+</style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="escudo">⚖️</div>
-        <h1>Máster Ley Vzla IA</h1>
-        <p class="subtitle">Constitución de la República Bolivariana de Venezuela</p>
-    </div>
+<div class="header">
+<div class="esc">⚖️</div>
+<h1>Máster Ley Vzla IA</h1>
+<p class="sub">Constitución de la República Bolivariana de Venezuela</p>
+<div id="header-auth"></div>
+</div>
 
-    <div id="pantalla-constitucion" class="pantalla activa">
-        <div class="buscador-container">
-            <div class="buscador-wrapper">
-                <span class="lupa">🔍</span>
-                <input type="text" id="input-busqueda" placeholder="Buscar por número, título o palabra..." autocomplete="off">
-                <button class="btn-limpiar" id="btn-limpiar">✕</button>
-            </div>
-        </div>
+<!-- PANTALLA CONSTITUCIÓN -->
+<div id="pantalla-constitucion" class="pant act">
+<div class="busq">
+<div class="busq-w">
+<span>🔍</span>
+<input type="text" id="input-busqueda" placeholder="Buscar por número, título o palabra..." autocomplete="off">
+</div>
+</div>
+<div class="cont" id="contenedor-articulos"><div class="carg">Cargando Constitución...</div></div>
+<div class="cont hidden" id="contenedor-vista-articulo"></div>
+</div>
 
-        <div class="contenedor" id="contenedor-articulos">
-            <div class="cargando">Cargando Constitución...</div>
-        </div>
+<!-- PANTALLA TEST LEGAL -->
+<div id="pantalla-test" class="pant">
+<div class="cont">
+<div id="test-contenedor">
+<div class="test-box test-inicio">
+<div class="ic">📝</div>
+<h2>Test Legal</h2>
+<p>Evalúa tus conocimientos sobre la Constitución con preguntas de opción múltiple.</p>
+<button class="btn btn-prim" onclick="iniciarTestAleatorio()">🚀 Comenzar Test (10 preguntas)</button>
+</div>
+</div>
+</div>
+</div>
 
-        <div class="contenedor hidden" id="contenedor-vista-articulo"></div>
-    </div>
+<!-- PANTALLA PERFIL -->
+<div id="pantalla-perfil" class="pant">
+<div class="cont" id="perfil-contenedor">
+<div class="perfil-box">
+<div class="ic" style="font-size:60px;margin-bottom:16px">👤</div>
+<h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Mi Perfil</h2>
+<p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Inicia sesión para guardar tu progreso</p>
+<button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión</button>
+</div>
+</div>
+</div>
 
-    <div id="pantalla-trivia" class="pantalla">
-        <div class="contenedor">
-            <div style="background: var(--card); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border);">
-                <div style="font-size: 40px; margin-bottom: 10px;">🎯</div>
-                <h2 style="color: var(--accent); font-size: 18px; margin-bottom: 8px;">Modo Trivia</h2>
-                <p style="color: var(--muted); font-size: 13px;">La trivia mejorada estará disponible en la próxima fase. Por ahora, puedes estudiar la Constitución completa.</p>
-            </div>
-        </div>
-    </div>
+<!-- PANTALLA AJUSTES -->
+<div id="pantalla-ajustes" class="pant">
+<div class="cont">
+<div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px">
+<h3 style="color:var(--txt);font-size:15px">📱 Versión</h3>
+<p style="color:var(--mut);font-size:12px">Máster Ley Vzla IA · v1.0</p>
+</div>
+<div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px">
+<h3 style="color:var(--txt);font-size:15px">📚 Fuente oficial</h3>
+<p style="color:var(--mut);font-size:12px">Gaceta Oficial N° 5.908 · Enmienda N° 1 (2009)</p>
+</div>
+<div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor)">
+<h3 style="color:var(--txt);font-size:15px">🌙 Tema</h3>
+<label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer">
+<input type="checkbox" id="switch-tema" checked>
+<span style="font-size:13px;color:var(--txt2)">Modo oscuro</span>
+</label>
+</div>
+</div>
+</div>
 
-    <div id="pantalla-ajustes" class="pantalla">
-        <div class="contenedor">
-            <div class="ajuste-item">
-                <div class="ajuste-info">
-                    <h3>🌙 Modo oscuro</h3>
-                    <p>Cambia entre tema oscuro y claro</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="switch-tema" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
+<!-- MODAL LOGIN -->
+<div id="modal-login" class="modal hidden">
+<div class="modal-box" style="position:relative">
+<button class="modal-cerrar" onclick="cerrarModalLogin()">✕</button>
+<div class="ic">🔐</div>
+<h2>Iniciar Sesión</h2>
+<p>Elige cómo quieres acceder a Máster Ley Vzla IA</p>
+<button class="btn btn-google" onclick="loginGoogle()">
+<svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+Continuar con Google
+</button>
+<div class="divisor">o</div>
+<input type="email" id="login-email" placeholder="Correo electrónico">
+<input type="password" id="login-pass" placeholder="Contraseña">
+<button class="btn btn-prim" onclick="loginEmail()" style="margin-top:14px">Iniciar Sesión con Email</button>
+<button class="btn" onclick="registroEmail()" style="margin-top:8px">Crear cuenta nueva</button>
+<div class="divisor">o</div>
+<button class="btn" onclick="loginInvitado()">👤 Continuar como invitado</button>
+</div>
+</div>
 
-            <div class="ajuste-item">
-                <div class="ajuste-info">
-                    <h3>📱 Versión</h3>
-                    <p>Máster Ley Vzla IA · v1.0</p>
-                </div>
-            </div>
+<!-- BARRA DE PESTAÑAS -->
+<div class="tabs">
+<button class="tab act" data-pantalla="constitucion"><span class="ic">🏛️</span>Constitución</button>
+<button class="tab" data-pantalla="test"><span class="ic">📝</span>Test Legal</button>
+<button class="tab" data-pantalla="perfil"><span class="ic">👤</span>Perfil</button>
+<button class="tab" data-pantalla="ajustes"><span class="ic">⚙️</span>Ajustes</button>
+</div>
 
-            <div class="ajuste-item">
-                <div class="ajuste-info">
-                    <h3>📚 Fuente oficial</h3>
-                    <p>Gaceta Oficial N° 5.908 · Enmienda N° 1 (2009)</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="tabs-bar">
-        <button class="tab-item activo" data-pantalla="constitucion">
-            <span class="tab-icono">🏛️</span>
-            Constitución
-        </button>
-        <button class="tab-item" data-pantalla="trivia">
-            <span class="tab-icono">🎯</span>
-            Trivia
-        </button>
-        <button class="tab-item" data-pantalla="ajustes">
-            <span class="tab-icono">⚙️</span>
-            Ajustes
-        </button>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOecJaAR2WJ8MW-WRSEqoxUYGEgxenxK8",
-            authDomain: "masterleyvzla.firebaseapp.com",
-            projectId: "masterleyvzla",
-            storageBucket: "masterleyvzla.firebasestorage.app",
-            messagingSenderId: "178092366571",
-            appId: "1:178092366571:web:1c64f7cc911ceb6778bcae"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        const NOMBRES_TITULOS = {
-            "Título I": "PRINCIPIOS FUNDAMENTALES",
-            "Título II": "DEL ESPACIO GEOGRÁFICO Y LA DIVISIÓN POLÍTICA",
-            "Título III": "DE LOS DERECHOS HUMANOS Y GARANTÍAS, Y DE LOS DEBERES",
-            "Título IV": "DEL PODER PÚBLICO",
-            "Título V": "DE LA ORGANIZACIÓN DEL PODER PÚBLICO NACIONAL",
-            "Título VI": "DEL SISTEMA SOCIOECONÓMICO",
-            "Título VII": "DE LA SEGURIDAD DE LA NACIÓN",
-            "Título VIII": "DE LA PROTECCIÓN DE ESTA CONSTITUCIÓN",
-            "Título IX": "DE LA REFORMA CONSTITUCIONAL"
-        };
-
-        const ORDEN_TITULOS = ["Título I", "Título II", "Título III", "Título IV", "Título V", "Título VI", "Título VII", "Título VIII", "Título IX"];
-
-        let todosLosArticulos = [];
-        let articuloActual = null;
-
-        function aplicarTema(temaOscuro) {
-            if (temaOscuro) {
-                document.body.classList.remove('tema-claro');
-            } else {
-                document.body.classList.add('tema-claro');
-            }
-            localStorage.setItem('tema_oscuro', temaOscuro ? '1' : '0');
-        }
-
-        function cargarTemaGuardado() {
-            const guardado = localStorage.getItem('tema_oscuro');
-            const esOscuro = guardado === null ? true : guardado === '1';
-            document.getElementById('switch-tema').checked = esOscuro;
-            aplicarTema(esOscuro);
-        }
-
-        function cambiarPantalla(nombrePantalla) {
-            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
-            document.getElementById('pantalla-' + nombrePantalla).classList.add('activa');
-
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('activo'));
-            document.querySelector('.tab-item[data-pantalla="' + nombrePantalla + '"]').classList.add('activo');
-
-            if (nombrePantalla === 'constitucion') {
-                mostrarListado();
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        document.querySelectorAll('.tab-item').forEach(tab => {
-            tab.addEventListener('click', () => {
-                cambiarPantalla(tab.dataset.pantalla);
-            });
-        });
-
-        async function cargarArticulos() {
-            try {
-                const snapshot = await db.collection('articulos').get();
-                todosLosArticulos = [];
-                snapshot.forEach(doc => {
-                    todosLosArticulos.push({ id: doc.id, ...doc.data() });
-                });
-                // Ordenar manualmente
-                todosLosArticulos.sort((a, b) => (a.orden || 0) - (b.orden || 0));
-                mostrarListado();
-            } catch (error) {
-                console.error('Error al cargar artículos:', error);
-                document.getElementById('contenedor-articulos').innerHTML = `
-                    <div class="mensaje-vacio">
-                        <div class="icono">⚠️</div>
-                        <p>Error al cargar la Constitución. Revisa tu conexión.</p>
-                    </div>
-                `;
-            }
-        }
-
-        // ✅ FUNCIÓN BLINDADA - Nunca devuelve undefined
-        function analizarCapitulo(capituloCompleto) {
-            // Si no es string válido, devolvemos un objeto seguro
-            if (!capituloCompleto || typeof capituloCompleto !== 'string' || capituloCompleto.trim() === '') {
-                return { titulo: "Sin título", capitulo: null };
-            }
-            
-            const partes = capituloCompleto.split(' - ');
-            let titulo = (partes[0] || '').trim();
-            if (!titulo) titulo = "Sin título";
-            
-            const capitulo = partes.length > 1 ? partes.slice(1).join(' - ').trim() : null;
-            
-            return { titulo, capitulo: capitulo || null };
-        }
-
-        // ✅ FUNCIÓN BLINDADA - Genera un ID seguro sin fallar
-        function generarIdSeguro(texto) {
-            if (!texto || typeof texto !== 'string') return 'sin-id-' + Math.random().toString(36).substr(2, 9);
-            return texto.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '').toLowerCase() || 'sin-id';
-        }
-
-        function mostrarListado() {
-            document.getElementById('contenedor-articulos').classList.remove('hidden');
-            document.getElementById('contenedor-vista-articulo').classList.add('hidden');
-            articuloActual = null;
-
-            const contenedor = document.getElementById('contenedor-articulos');
-            if (todosLosArticulos.length === 0) {
-                contenedor.innerHTML = '<div class="cargando">Cargando...</div>';
-                return;
-            }
-
-            // Agrupar por Título
-            const titulos = {};
-            todosLosArticulos.forEach(art => {
-                const info = analizarCapitulo(art.capitulo);
-                const claveTitulo = info.titulo || "Sin título";
-                
-                if (!titulos[claveTitulo]) {
-                    titulos[claveTitulo] = { nombre: claveTitulo, articulos: [], capitulos: {} };
-                }
-                titulos[claveTitulo].articulos.push(art);
-                
-                if (info.capitulo) {
-                    if (!titulos[claveTitulo].capitulos[info.capitulo]) {
-                        titulos[claveTitulo].capitulos[info.capitulo] = [];
-                    }
-                    titulos[claveTitulo].capitulos[info.capitulo].push(art);
-                }
-            });
-
-            // Ordenar títulos
-            const titulosOrdenados = Object.keys(titulos).sort((a, b) => {
-                const ia = ORDEN_TITULOS.indexOf(a);
-                const ib = ORDEN_TITULOS.indexOf(b);
-                if (ia === -1 && ib === -1) return a.localeCompare(b);
-                if (ia === -1) return 1;
-                if (ib === -1) return -1;
-                return ia - ib;
-            });
-
-            let html = '';
-            titulosOrdenados.forEach(nombreTitulo => {
-                // ✅ DOBLE BLINDAJE
-                if (!nombreTitulo || typeof nombreTitulo !== 'string') return;
-                
-                const info = titulos[nombreTitulo];
-                if (!info || !info.articulos || info.articulos.length === 0) return;
-                
-                const arts = info.articulos;
-                const primerNum = arts[0] && arts[0].numero ? arts[0].numero : '?';
-                const ultimoNum = arts[arts.length - 1] && arts[arts.length - 1].numero ? arts[arts.length - 1].numero : '?';
-                const nombreCompleto = NOMBRES_TITULOS[nombreTitulo] || nombreTitulo;
-                const tieneCapitulos = Object.keys(info.capitulos).length > 0;
-                const idUnico = 'titulo-' + generarIdSeguro(nombreTitulo);
-
-                html += `
-                    <div class="titulo-encabezado" onclick="toggleTitulo(this, '${idUnico}')">
-                        <div>
-                            <div class="titulo-numero">${nombreTitulo.toUpperCase()}</div>
-                            <div class="titulo-nombre">${nombreCompleto}</div>
-                        </div>
-                        <span class="flecha">▶</span>
-                    </div>
-                    <div class="titulo-contenido" id="${idUnico}">
-                `;
-
-                if (tieneCapitulos) {
-                    const capsOrdenados = Object.keys(info.capitulos);
-                    capsOrdenados.forEach(nombreCap => {
-                        if (!nombreCap || typeof nombreCap !== 'string') return;
-                        
-                        const artsCap = info.capitulos[nombreCap];
-                        if (!artsCap || artsCap.length === 0) return;
-                        
-                        const primerNumCap = artsCap[0] && artsCap[0].numero ? artsCap[0].numero : '?';
-                        const ultimoNumCap = artsCap[artsCap.length - 1] && artsCap[artsCap.length - 1].numero ? artsCap[artsCap.length - 1].numero : '?';
-                        const idCap = 'cap-' + generarIdSeguro(nombreCap);
-
-                        html += `
-                            <div class="capitulo-encabezado" onclick="toggleCapitulo(event, this, '${idCap}')">
-                                <div>
-                                    <div class="capitulo-nombre">${nombreCap.toUpperCase()}</div>
-                                    <div class="capitulo-rango">${artsCap.length} artículos · ${primerNumCap}-${ultimoNumCap}</div>
-                                </div>
-                                <span class="flecha-cap">▶</span>
-                            </div>
-                            <div class="capitulo-contenido" id="${idCap}">
-                                ${artsCap.map(art => renderArticuloCard(art)).join('')}
-                            </div>
-                        `;
-                    });
-                } else {
-                    html += arts.map(art => renderArticuloCard(art)).join('');
-                }
-
-                html += `</div>`;
-            });
-
-            contenedor.innerHTML = html;
-
-            // Abrir el primer título automáticamente
-            const primerTitulo = contenedor.querySelector('.titulo-encabezado');
-            if (primerTitulo) {
-                const onclickAttr = primerTitulo.getAttribute('onclick') || '';
-                const match = onclickAttr.match(/'([^']+)'/);
-                if (match && match[1]) {
-                    toggleTitulo(primerTitulo, match[1]);
-                }
-            }
-        }
-
-        function renderArticuloCard(art) {
-            const id = art.id || '';
-            const numero = art.numero || '?';
-            const titulo = art.titulo || '';
-            const texto = art.texto_oficial || '';
-            return `
-                <div class="articulo-card" onclick="verArticulo('${id}')">
-                    <span class="articulo-numero">Art. ${numero}</span>
-                    <div class="articulo-titulo">${titulo}</div>
-                    <div class="articulo-preview">${texto.substring(0, 120)}...</div>
-                </div>
-            `;
-        }
-
-        function toggleTitulo(el, idContenido) {
-            if (!el || !idContenido) return;
-            el.classList.toggle('abierto');
-            const contenido = document.getElementById(idContenido);
-            if (contenido) contenido.classList.toggle('abierto');
-        }
-
-        function toggleCapitulo(event, el, idContenido) {
-            if (event) event.stopPropagation();
-            if (!el || !idContenido) return;
-            el.classList.toggle('abierto');
-            const contenido = document.getElementById(idContenido);
-            if (contenido) contenido.classList.toggle('abierto');
-        }
-
-        function verArticulo(id) {
-            const art = todosLosArticulos.find(a => a.id === id);
-            if (!art) return;
-            articuloActual = art;
-
-            document.getElementById('contenedor-articulos').classList.add('hidden');
-            const vista = document.getElementById('contenedor-vista-articulo');
-            vista.classList.remove('hidden');
-
-            vista.innerHTML = `
-                <div class="vista-articulo">
-                    <div class="cabecera">
-                        <span class="numero-grande">Artículo ${art.numero || '?'}</span>
-                        <div class="titulo-articulo">${art.titulo || ''}</div>
-                        <div class="capitulo-articulo">${art.capitulo || ''}</div>
-                    </div>
-                    <div class="texto-oficial">${art.texto_oficial || ''}</div>
-                    <button class="btn btn-secondary" onclick="mostrarListado()">⬅ Volver al índice</button>
-                </div>
-            `;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function buscar(termino) {
-            const contenedor = document.getElementById('contenedor-articulos');
-            document.getElementById('contenedor-vista-articulo').classList.add('hidden');
-            contenedor.classList.remove('hidden');
-
-            if (!termino || termino.trim() === '') {
-                mostrarListado();
-                return;
-            }
-
-            const t = termino.toLowerCase().trim();
-            const resultados = todosLosArticulos.filter(art => {
-                const num = String(art.numero || '');
-                const titulo = (art.titulo || '').toLowerCase();
-                const texto = (art.texto_oficial || '').toLowerCase();
-                const capitulo = (art.capitulo || '').toLowerCase();
-                return num.includes(t) || titulo.includes(t) || texto.includes(t) || capitulo.includes(t);
-            });
-
-            if (resultados.length === 0) {
-                contenedor.innerHTML = `
-                    <div class="mensaje-vacio">
-                        <div class="icono">🔍</div>
-                        <p>No se encontraron artículos con "<strong>${termino}</strong>"</p>
-                    </div>
-                `;
-                return;
-            }
-
-            contenedor.innerHTML = `
-                <div style="padding: 8px 0; color: var(--muted); font-size: 13px; margin-bottom: 8px;">
-                    ${resultados.length} resultado(s) para "<strong style="color: var(--accent);">${termino}</strong>"
-                </div>
-                ${resultados.map(art => `
-                    <div class="articulo-card" onclick="verArticulo('${art.id}')">
-                        <span class="articulo-numero">Art. ${art.numero || '?'}</span>
-                        <div class="articulo-titulo">${art.titulo || ''}</div>
-                        <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 150)}...</div>
-                    </div>
-                `).join('')}
-            `;
-        }
-
-        document.getElementById('input-busqueda').addEventListener('input', (e) => {
-            const valor = e.target.value;
-            document.getElementById('btn-limpiar').classList.toggle('visible', valor.length > 0);
-            buscar(valor);
-        });
-
-        document.getElementById('btn-limpiar').addEventListener('click', () => {
-            document.getElementById('input-busqueda').value = '';
-            document.getElementById('btn-limpiar').classList.remove('visible');
-            mostrarListado();
-        });
-
-        document.getElementById('switch-tema').addEventListener('change', (e) => {
-            aplicarTema(e.target.checked);
-        });
-
-        cargarTemaGuardado();
-        cargarArticulos();
-    </script>
+<script>
+// AQUÍ VA LA PARTE 2
+</script>
 </body>
 </html>

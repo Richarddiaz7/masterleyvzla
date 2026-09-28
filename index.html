@@ -18,9 +18,9 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .header h1{font-size:24px;color:var(--acc);margin-bottom:4px}
 .header .sub{font-size:13px;color:var(--txt2)}
 .header .esc{font-size:36px;margin-bottom:8px}
-.header .btn-login{position:absolute;top:16px;right:16px;background:var(--acc);color:var(--bg);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.header .btn-login{position:absolute;top:16px;right:16px;background:var(--acc);color:var(--bg);border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;z-index:50}
 .header .btn-login:hover{background:var(--acch)}
-.header .user-chip{position:absolute;top:16px;right:16px;background:var(--card);border:1px solid var(--acc);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--txt);display:flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit}
+.header .user-chip{position:absolute;top:16px;right:16px;background:var(--card);border:1px solid var(--acc);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--txt);display:flex;align-items:center;gap:8px;cursor:pointer;font-family:inherit;z-index:50}
 .header .user-chip img{width:24px;height:24px;border-radius:50%}
 .busq{padding:12px 16px;background:var(--bg2);position:sticky;top:0;z-index:10;border-bottom:1px solid var(--bor)}
 .busq-w{display:flex;align-items:center;background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:10px 14px}
@@ -82,7 +82,7 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .portada-botones{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
 .portada-pie{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:11px;color:#7a8fa8}
 .portada-pie span{background:rgba(255,255,255,.05);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,162,39,.2)}
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal.hidden{display:none!important}
 .modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center;position:relative}
 .modal-box .ic{font-size:48px;margin-bottom:12px}
@@ -133,7 +133,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 </head>
 <body>
 
-<!-- PORTADA -->
 <div id="pantalla-portada" class="portada">
 <div class="portada-contenido">
 <div class="portada-escudo">⚖️</div>
@@ -334,6 +333,7 @@ auth.onAuthStateChanged(async (user) => {
         await guardarOActualizarUsuario(user);
     }
     actualizarHeaderAuth();
+    // ✅ Solo ocultar portada si el usuario autorizó explícitamente
     if(user && entrarAppAutorizado){
         ocultarPortada();
     }
@@ -378,8 +378,15 @@ function actualizarHeaderAuth(){
     }
 }
 
-function abrirModalLogin(){ document.getElementById('modal-login').classList.remove('hidden'); }
-function cerrarModalLogin(){ document.getElementById('modal-login').classList.add('hidden'); }
+// ✅ ABRIR MODAL - NO toca la portada
+function abrirModalLogin(){
+    document.getElementById('modal-login').classList.remove('hidden');
+}
+
+// ✅ CERRAR MODAL - SOLO cierra el modal, NO toca la portada
+function cerrarModalLogin(){
+    document.getElementById('modal-login').classList.add('hidden');
+}
 
 async function loginGoogle(){
     try{
@@ -390,7 +397,7 @@ async function loginGoogle(){
     }catch(e){
         entrarAppAutorizado = false;
         console.error('Error login Google:', e);
-        alert('Error al iniciar sesión con Google: ' + e.message);
+        alert('Error: ' + e.message);
     }
 }
 
@@ -487,6 +494,36 @@ function analizar(cap){
 function idSeguro(t){
     if(!t || typeof t !== 'string') return 'sin-' + Math.random().toString(36).substr(2,9);
     return (t.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'').toLowerCase()) || 'sin-' + Math.random().toString(36).substr(2,9);
+}
+
+// ✅ MEZCLAR OPCIONES para evitar el patrón "siempre es B"
+function mezclarOpciones(p){
+    const opciones = [
+        {letra:'A', texto: p.opcion_a || ''},
+        {letra:'B', texto: p.opcion_b || ''},
+        {letra:'C', texto: p.opcion_c || ''},
+        {letra:'D', texto: p.opcion_d || ''}
+    ];
+    const correctaOriginal = (p.respuesta_correcta || '').toUpperCase();
+    
+    // Encontrar el texto de la respuesta correcta
+    let textoCorrecto = '';
+    opciones.forEach(o => { if(o.letra === correctaOriginal) textoCorrecto = o.texto; });
+    
+    // Mezclar aleatoriamente
+    const mezcladas = opciones.sort(() => Math.random() - 0.5);
+    
+    // Nueva letra correcta
+    let nuevaLetra = 'A';
+    mezcladas.forEach((o, i) => {
+        if(o.texto === textoCorrecto) nuevaLetra = ['A','B','C','D'][i];
+    });
+    
+    return {
+        opciones: mezcladas,
+        nuevaCorrecta: nuevaLetra,
+        textoCorrecto: textoCorrecto
+    };
 }
 
 // =====================================
@@ -605,12 +642,12 @@ function verArt(id){
 // =====================================
 // TEST POR ARTÍCULO
 // =====================================
-let testActual = {preguntas:[], indice:0, puntaje:0, respondida:false, articulo:null};
+let testActual = {preguntas:[], indice:0, puntaje:0, respondida:false, articulo:null, opcionesMezcladas:null};
 
 function iniciarTestArticulo(numArt){
     const pregs = preguntas.filter(p => p.articulo_id === numArt);
     if(pregs.length === 0){ alert('No hay preguntas para este artículo'); return; }
-    testActual = {preguntas: pregs, indice: 0, puntaje: 0, respondida: false, articulo: numArt};
+    testActual = {preguntas: pregs, indice: 0, puntaje: 0, respondida: false, articulo: numArt, opcionesMezcladas: null};
     mostrarPreguntaTest();
 }
 
@@ -619,10 +656,20 @@ function mostrarPreguntaTest(){
     const p = testActual.preguntas[testActual.indice];
     if(!p){ mostrarResultadoTest(); return; }
 
+    // ✅ Mezclar opciones
+    const mezcla = mezclarOpciones(p);
+    testActual.opcionesMezcladas = mezcla;
+
     const total = testActual.preguntas.length;
     const prog = (testActual.indice / total) * 100;
 
-    cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testActual.indice+1)+' de '+total+'</span><span>✅ '+testActual.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops"><button class="test-op" data-op="A" onclick="responderTest(\'A\')"><span class="letra">A</span><span>'+(p.opcion_a||'')+'</span></button><button class="test-op" data-op="B" onclick="responderTest(\'B\')"><span class="letra">B</span><span>'+(p.opcion_b||'')+'</span></button><button class="test-op" data-op="C" onclick="responderTest(\'C\')"><span class="letra">C</span><span>'+(p.opcion_c||'')+'</span></button><button class="test-op" data-op="D" onclick="responderTest(\'D\')"><span class="letra">D</span><span>'+(p.opcion_d||'')+'</span></button></div><div id="test-respuesta"></div></div>';
+    let opsHtml = '';
+    mezcla.opciones.forEach((o, i) => {
+        const letra = ['A','B','C','D'][i];
+        opsHtml += '<button class="test-op" data-op="'+letra+'" onclick="responderTest(\''+letra+'\')"><span class="letra">'+letra+'</span><span>'+o.texto+'</span></button>';
+    });
+
+    cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testActual.indice+1)+' de '+total+'</span><span>✅ '+testActual.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops">'+opsHtml+'</div><div id="test-respuesta"></div></div>';
     testActual.respondida = false;
     window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -631,8 +678,9 @@ function responderTest(op){
     if(testActual.respondida) return;
     testActual.respondida = true;
 
+    const correcta = testActual.opcionesMezcladas.nuevaCorrecta;
+    const textoCorrecto = testActual.opcionesMezcladas.textoCorrecto;
     const p = testActual.preguntas[testActual.indice];
-    const correcta = p.respuesta_correcta || '';
     const botones = document.querySelectorAll('.test-op');
 
     botones.forEach(b => {
@@ -646,7 +694,7 @@ function responderTest(op){
 
     const esCorrecta = op === correcta;
     const total = testActual.preguntas.length;
-    document.getElementById('test-respuesta').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+correcta+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaTest()">'+(testActual.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
+    document.getElementById('test-respuesta').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+textoCorrecto+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaTest()">'+(testActual.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
 }
 
 function siguientePreguntaTest(){
@@ -698,14 +746,14 @@ function volverAlArticulo(){
 // =====================================
 // TEST LEGAL (aleatorio)
 // =====================================
-let testGlobal = {preguntas:[], indice:0, puntaje:0, respondida:false};
+let testGlobal = {preguntas:[], indice:0, puntaje:0, respondida:false, opcionesMezcladas:null};
 
 function iniciarTestAleatorio(){
     if(preguntas.length === 0){
         document.getElementById('test-contenedor').innerHTML = '<div class="test-box test-inicio"><div class="ic">⚠️</div><h2>Sin preguntas</h2><p>No se pudieron cargar las preguntas.</p></div>';
         return;
     }
-    testGlobal = {preguntas: preguntas.sort(() => Math.random()-0.5).slice(0,10), indice: 0, puntaje: 0, respondida: false};
+    testGlobal = {preguntas: preguntas.sort(() => Math.random()-0.5).slice(0,10), indice: 0, puntaje: 0, respondida: false, opcionesMezcladas: null};
     mostrarPreguntaGlobal();
 }
 
@@ -714,10 +762,20 @@ function mostrarPreguntaGlobal(){
     const p = testGlobal.preguntas[testGlobal.indice];
     if(!p){ mostrarResultadoGlobal(); return; }
 
+    // ✅ Mezclar opciones
+    const mezcla = mezclarOpciones(p);
+    testGlobal.opcionesMezcladas = mezcla;
+
     const total = testGlobal.preguntas.length;
     const prog = (testGlobal.indice / total) * 100;
 
-    cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testGlobal.indice+1)+' de '+total+'</span><span>✅ '+testGlobal.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops"><button class="test-op" data-op="A" onclick="responderGlobal(\'A\')"><span class="letra">A</span><span>'+(p.opcion_a||'')+'</span></button><button class="test-op" data-op="B" onclick="responderGlobal(\'B\')"><span class="letra">B</span><span>'+(p.opcion_b||'')+'</span></button><button class="test-op" data-op="C" onclick="responderGlobal(\'C\')"><span class="letra">C</span><span>'+(p.opcion_c||'')+'</span></button><button class="test-op" data-op="D" onclick="responderGlobal(\'D\')"><span class="letra">D</span><span>'+(p.opcion_d||'')+'</span></button></div><div id="test-respuesta-global"></div></div>';
+    let opsHtml = '';
+    mezcla.opciones.forEach((o, i) => {
+        const letra = ['A','B','C','D'][i];
+        opsHtml += '<button class="test-op" data-op="'+letra+'" onclick="responderGlobal(\''+letra+'\')"><span class="letra">'+letra+'</span><span>'+o.texto+'</span></button>';
+    });
+
+    cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testGlobal.indice+1)+' de '+total+'</span><span>✅ '+testGlobal.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops">'+opsHtml+'</div><div id="test-respuesta-global"></div></div>';
     testGlobal.respondida = false;
     window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -726,8 +784,9 @@ function responderGlobal(op){
     if(testGlobal.respondida) return;
     testGlobal.respondida = true;
 
+    const correcta = testGlobal.opcionesMezcladas.nuevaCorrecta;
+    const textoCorrecto = testGlobal.opcionesMezcladas.textoCorrecto;
     const p = testGlobal.preguntas[testGlobal.indice];
-    const correcta = p.respuesta_correcta || '';
     const botones = document.querySelectorAll('.test-op');
 
     botones.forEach(b => {
@@ -741,7 +800,7 @@ function responderGlobal(op){
 
     const esCorrecta = op === correcta;
     const total = testGlobal.preguntas.length;
-    document.getElementById('test-respuesta-global').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+correcta+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaGlobal()">'+(testGlobal.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
+    document.getElementById('test-respuesta-global').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+textoCorrecto+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaGlobal()">'+(testGlobal.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
 }
 
 function siguientePreguntaGlobal(){

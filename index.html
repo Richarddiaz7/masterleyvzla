@@ -350,11 +350,14 @@ auth.onAuthStateChanged(async (user) => {
         esInvitado = user.isAnonymous;
         await guardarOActualizarUsuario(user);
         actualizarHeaderAuth();
-      } else {
+        // ✅ Solo ocultar portada si hay usuario
+        const p = document.getElementById('pantalla-portada');
+        if(p) p.classList.add('hidden');
+    } else {
         usuarioActual = null;
         esInvitado = false;
         actualizarHeaderAuth();
-        // Mostrar portada si no hay usuario
+        // ✅ Mostrar portada si NO hay usuario
         const p = document.getElementById('pantalla-portada');
         if(p) p.classList.remove('hidden');
     }
@@ -390,9 +393,7 @@ async function guardarOActualizarUsuario(user){
 function actualizarHeaderAuth(){
     const cont = document.getElementById('header-auth');
     if(usuarioActual){
-        // Ocultar portada si estaba visible
-        const p = document.getElementById('pantalla-portada');
-        if(p) p.classList.add('hidden');
+        // ✅ NO tocamos la portada aquí
         const nombre = usuarioActual.displayName || (esInvitado ? 'Invitado' : 'Usuario');
         const foto = usuarioActual.photoURL;
         cont.innerHTML = `

@@ -70,8 +70,7 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .msg-v{text-align:center;padding:40px 20px;color:var(--mut)}
 .msg-v .ic{font-size:48px;margin-bottom:12px;opacity:.5}
 .carg{text-align:center;padding:40px 20px;color:var(--mut)}
-/* PORTADA */
-.portada{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a2540 0%,#1e3a5f 50%,#8b6914 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:2000;overflow-y:auto}
+.portada{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a2540 0%,#1e3a5f 50%,#8b6914 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999;overflow-y:auto}
 .portada.hidden{display:none!important}
 .portada-contenido{text-align:center;max-width:400px;width:100%;animation:fadeIn .6s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -83,10 +82,9 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .portada-botones{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
 .portada-pie{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:11px;color:#7a8fa8}
 .portada-pie span{background:rgba(255,255,255,.05);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,162,39,.2)}
-/* MODAL LOGIN */
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal.hidden{display:none!important}
-.modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center}
+.modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center;position:relative}
 .modal-box .ic{font-size:48px;margin-bottom:12px}
 .modal-box h2{color:var(--acc);font-size:20px;margin-bottom:8px}
 .modal-box p{color:var(--txt2);font-size:13px;margin-bottom:20px}
@@ -96,8 +94,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .modal-cerrar{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--mut);font-size:24px;cursor:pointer}
 .divisor{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--mut);font-size:12px}
 .divisor::before,.divisor::after{content:'';flex:1;height:1px;background:var(--bor)}
-
-/* TEST LEGAL */
 .test-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor)}
 .test-inicio{text-align:center;padding:30px 20px}
 .test-inicio .ic{font-size:60px;margin-bottom:16px}
@@ -123,8 +119,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .test-resultado .puntaje{font-size:48px;font-weight:bold;color:var(--acc);margin:16px 0}
 .test-resultado p{color:var(--txt2);font-size:15px;margin-bottom:20px}
 .art-test-btn{background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;width:100%;margin-top:16px;font-family:inherit}
-
-/* PERFIL */
 .perfil-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor);text-align:center}
 .perfil-avatar{width:80px;height:80px;border-radius:50%;background:var(--acc);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;font-weight:bold}
 .perfil-box img{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:block}
@@ -139,34 +133,33 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 </head>
 <body>
 
+<!-- PORTADA -->
+<div id="pantalla-portada" class="portada">
+<div class="portada-contenido">
+<div class="portada-escudo">⚖️</div>
+<h1 class="portada-titulo">MÁSTER LEY VZLA IA</h1>
+<p class="portada-subtitulo">La ley al alcance de todos</p>
+<div class="portada-bandera">🇻🇪</div>
+<p class="portada-pais">Venezuela</p>
+<div class="portada-botones">
+<button class="btn btn-prim" onclick="abrirModalLogin()">🔐 Iniciar Sesión</button>
+<button class="btn" onclick="entrarComoInvitado()">👤 Continuar como Invitado</button>
+</div>
+<div class="portada-pie">
+<span>🏛️ Constitución</span>
+<span>📝 Test Legal</span>
+<span>🤖 Próximamente IA</span>
+</div>
+</div>
+</div>
+
 <div class="header">
 <div class="esc">⚖️</div>
 <h1>Máster Ley Vzla IA</h1>
 <p class="sub">Constitución de la República Bolivariana de Venezuela</p>
 <div id="header-auth"></div>
 </div>
-<!-- PORTADA -->
-<div id="pantalla-portada" class="portada">
-    <div class="portada-contenido">
-        <div class="portada-escudo">⚖️</div>
-        <h1 class="portada-titulo">MÁSTER LEY VZLA IA</h1>
-        <p class="portada-subtitulo">La ley al alcance de todos</p>
-        <div class="portada-bandera">🇻🇪</div>
-        <p class="portada-pais">Venezuela</p>
-        
-        <div class="portada-botones">
-            <button class="btn btn-prim" onclick="abrirModalLogin()">🔐 Iniciar Sesión</button>
-            <button class="btn" onclick="entrarComoInvitado()">👤 Continuar como Invitado</button>
-        </div>
-        
-        <div class="portada-pie">
-            <span>🏛️ Constitución</span>
-            <span>📝 Test Legal</span>
-            <span>🤖 Próximamente IA</span>
-        </div>
-    </div>
-</div>
-<!-- PANTALLA CONSTITUCIÓN -->
+
 <div id="pantalla-constitucion" class="pant act">
 <div class="busq">
 <div class="busq-w">
@@ -178,7 +171,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 <div class="cont hidden" id="contenedor-vista-articulo"></div>
 </div>
 
-<!-- PANTALLA TEST LEGAL -->
 <div id="pantalla-test" class="pant">
 <div class="cont">
 <div id="test-contenedor">
@@ -192,7 +184,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 </div>
 </div>
 
-<!-- PANTALLA PERFIL -->
 <div id="pantalla-perfil" class="pant">
 <div class="cont" id="perfil-contenedor">
 <div class="perfil-box">
@@ -204,7 +195,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 </div>
 </div>
 
-<!-- PANTALLA AJUSTES -->
 <div id="pantalla-ajustes" class="pant">
 <div class="cont">
 <div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px">
@@ -225,9 +215,8 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 </div>
 </div>
 
-<!-- MODAL LOGIN -->
 <div id="modal-login" class="modal hidden">
-<div class="modal-box" style="position:relative">
+<div class="modal-box">
 <button class="modal-cerrar" onclick="cerrarModalLogin()">✕</button>
 <div class="ic">🔐</div>
 <h2>Iniciar Sesión</h2>
@@ -246,7 +235,6 @@ Continuar con Google
 </div>
 </div>
 
-<!-- BARRA DE PESTAÑAS -->
 <div class="tabs">
 <button class="tab act" data-pantalla="constitucion"><span class="ic">🏛️</span>Constitución</button>
 <button class="tab" data-pantalla="test"><span class="ic">📝</span>Test Legal</button>
@@ -255,9 +243,6 @@ Continuar con Google
 </div>
 
 <script>
-// =====================================
-// FIREBASE
-// =====================================
 const firebaseConfig = {
     apiKey: "AIzaSyCOecJaAR2WJ8MW-WRSEqoxUYGEgxenxK8",
     authDomain: "masterleyvzla.firebaseapp.com",
@@ -270,14 +255,12 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// =====================================
-// ESTADO GLOBAL
-// =====================================
 let arts = [];
 let preguntas = [];
 let artActual = null;
 let usuarioActual = null;
 let esInvitado = false;
+let entrarAppAutorizado = false;
 
 const NOMBRES = {
     "Título I":"PRINCIPIOS FUNDAMENTALES",
@@ -291,6 +274,25 @@ const NOMBRES = {
     "Título IX":"DE LA REFORMA CONSTITUCIONAL"
 };
 const ORDEN = ["Título I","Título II","Título III","Título IV","Título V","Título VI","Título VII","Título VIII","Título IX"];
+
+// =====================================
+// PORTADA
+// =====================================
+function ocultarPortada(){
+    document.getElementById('pantalla-portada').classList.add('hidden');
+}
+
+async function entrarComoInvitado(){
+    entrarAppAutorizado = true;
+    ocultarPortada();
+    if(!usuarioActual){
+        try{
+            await auth.signInAnonymously();
+        }catch(e){
+            console.error('Error login invitado:', e);
+        }
+    }
+}
 
 // =====================================
 // TEMA
@@ -311,26 +313,7 @@ document.getElementById('switch-tema').addEventListener('change', e => aplicarTe
 // =====================================
 // NAVEGACIÓN
 // =====================================
-// =====================================
-// PORTADA
-// =====================================
-function ocultarPortada(){
-    document.getElementById('pantalla-portada').classList.add('hidden');
-}
-
-async function entrarComoInvitado(){
-    ocultarPortada();
-    // Si el usuario no está logueado, iniciamos sesión anónima
-    if(!usuarioActual){
-        try{
-            await auth.signInAnonymously();
-        }catch(e){
-            console.error('Error login invitado:', e);
-            // Aunque falle, dejamos entrar sin guardar
-        }
-    }
-}
-    function cambiarPantalla(n){
+function cambiarPantalla(n){
     document.querySelectorAll('.pant').forEach(p => p.classList.remove('act'));
     document.getElementById('pantalla-' + n).classList.add('act');
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('act'));
@@ -345,23 +328,17 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 // AUTENTICACIÓN
 // =====================================
 auth.onAuthStateChanged(async (user) => {
+    usuarioActual = user;
+    esInvitado = user ? user.isAnonymous : false;
     if(user){
-        usuarioActual = user;
-        esInvitado = user.isAnonymous;
         await guardarOActualizarUsuario(user);
-        actualizarHeaderAuth();
-        // ✅ Solo ocultar portada si hay usuario
-        const p = document.getElementById('pantalla-portada');
-        if(p) p.classList.add('hidden');
-    } else {
-        usuarioActual = null;
-        esInvitado = false;
-        actualizarHeaderAuth();
-        // ✅ Mostrar portada si NO hay usuario
-        const p = document.getElementById('pantalla-portada');
-        if(p) p.classList.remove('hidden');
+    }
+    actualizarHeaderAuth();
+    if(user && entrarAppAutorizado){
+        ocultarPortada();
     }
 });
+
 async function guardarOActualizarUsuario(user){
     try{
         const ref = db.collection('usuarios').doc(user.uid);
@@ -393,17 +370,11 @@ async function guardarOActualizarUsuario(user){
 function actualizarHeaderAuth(){
     const cont = document.getElementById('header-auth');
     if(usuarioActual){
-        // ✅ NO tocamos la portada aquí
         const nombre = usuarioActual.displayName || (esInvitado ? 'Invitado' : 'Usuario');
         const foto = usuarioActual.photoURL;
-        cont.innerHTML = `
-            <button class="user-chip" onclick="cambiarPantalla('perfil')">
-                ${foto ? '<img src="'+foto+'">' : '👤'}
-                <span>${nombre.split(' ')[0]}</span>
-            </button>
-        `;
+        cont.innerHTML = '<button class="user-chip" onclick="cambiarPantalla(\'perfil\')">' + (foto ? '<img src="'+foto+'">' : '👤') + '<span>' + nombre.split(' ')[0] + '</span></button>';
     } else {
-        cont.innerHTML = `<button class="btn-login" onclick="abrirModalLogin()">🔐 Iniciar Sesión</button>`;
+        cont.innerHTML = '<button class="btn-login" onclick="abrirModalLogin()">🔐 Iniciar Sesión</button>';
     }
 }
 
@@ -412,10 +383,12 @@ function cerrarModalLogin(){ document.getElementById('modal-login').classList.ad
 
 async function loginGoogle(){
     try{
+        entrarAppAutorizado = true;
         const provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithPopup(provider);
         cerrarModalLogin();
     }catch(e){
+        entrarAppAutorizado = false;
         console.error('Error login Google:', e);
         alert('Error al iniciar sesión con Google: ' + e.message);
     }
@@ -426,9 +399,11 @@ async function loginEmail(){
     const pass = document.getElementById('login-pass').value.trim();
     if(!email || !pass){ alert('Ingresa email y contraseña'); return; }
     try{
+        entrarAppAutorizado = true;
         await auth.signInWithEmailAndPassword(email, pass);
         cerrarModalLogin();
     }catch(e){
+        entrarAppAutorizado = false;
         console.error('Error login Email:', e);
         alert('Error: ' + e.message);
     }
@@ -440,9 +415,11 @@ async function registroEmail(){
     if(!email || !pass){ alert('Ingresa email y contraseña'); return; }
     if(pass.length < 6){ alert('La contraseña debe tener al menos 6 caracteres'); return; }
     try{
+        entrarAppAutorizado = true;
         await auth.createUserWithEmailAndPassword(email, pass);
         cerrarModalLogin();
     }catch(e){
+        entrarAppAutorizado = false;
         console.error('Error registro:', e);
         alert('Error: ' + e.message);
     }
@@ -450,9 +427,11 @@ async function registroEmail(){
 
 async function loginInvitado(){
     try{
+        entrarAppAutorizado = true;
         await auth.signInAnonymously();
         cerrarModalLogin();
     }catch(e){
+        entrarAppAutorizado = false;
         console.error('Error login invitado:', e);
         alert('Error: ' + e.message);
     }
@@ -460,7 +439,9 @@ async function loginInvitado(){
 
 async function cerrarSesion(){
     if(confirm('¿Cerrar sesión?')){
+        entrarAppAutorizado = false;
         await auth.signOut();
+        document.getElementById('pantalla-portada').classList.remove('hidden');
         cambiarPantalla('constitucion');
     }
 }
@@ -617,18 +598,7 @@ function verArt(id){
     const numArt = a.numero || '?';
     const tienePreg = preguntas.some(p => p.articulo_id === a.numero);
 
-    v.innerHTML = `
-        <div class="vista">
-            <div class="cab">
-                <span class="num-g">Artículo ${numArt}</span>
-                <div class="tit-a">${a.titulo||''}</div>
-                <div class="cap-a">${a.capitulo||''}</div>
-            </div>
-            <div class="tex">${a.texto_oficial||''}</div>
-            ${tienePreg ? '<button class="art-test-btn" onclick="iniciarTestArticulo('+numArt+')">📝 Hacer test de este artículo</button>' : ''}
-            <button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button>
-        </div>
-    `;
+    v.innerHTML = '<div class="vista"><div class="cab"><span class="num-g">Artículo '+numArt+'</span><div class="tit-a">'+(a.titulo||'')+'</div><div class="cap-a">'+(a.capitulo||'')+'</div></div><div class="tex">'+(a.texto_oficial||'')+'</div>'+(tienePreg ? '<button class="art-test-btn" onclick="iniciarTestArticulo('+numArt+')">📝 Hacer test de este artículo</button>' : '')+'<button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button></div>';
     window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -652,23 +622,7 @@ function mostrarPreguntaTest(){
     const total = testActual.preguntas.length;
     const prog = (testActual.indice / total) * 100;
 
-    cont.innerHTML = `
-        <div class="test-box">
-            <div class="test-prog">
-                <span>Pregunta ${testActual.indice+1} de ${total}</span>
-                <span>✅ ${testActual.puntaje} aciertos</span>
-            </div>
-            <div class="test-barra"><div class="test-barra-f" style="width:${prog}%"></div></div>
-            <div class="test-preg">${p.enunciado||''}</div>
-            <div class="test-ops">
-                <button class="test-op" data-op="A" onclick="responderTest('A')"><span class="letra">A</span><span>${p.opcion_a||''}</span></button>
-                <button class="test-op" data-op="B" onclick="responderTest('B')"><span class="letra">B</span><span>${p.opcion_b||''}</span></button>
-                <button class="test-op" data-op="C" onclick="responderTest('C')"><span class="letra">C</span><span>${p.opcion_c||''}</span></button>
-                <button class="test-op" data-op="D" onclick="responderTest('D')"><span class="letra">D</span><span>${p.opcion_d||''}</span></button>
-            </div>
-            <div id="test-respuesta"></div>
-        </div>
-    `;
+    cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testActual.indice+1)+' de '+total+'</span><span>✅ '+testActual.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops"><button class="test-op" data-op="A" onclick="responderTest(\'A\')"><span class="letra">A</span><span>'+(p.opcion_a||'')+'</span></button><button class="test-op" data-op="B" onclick="responderTest(\'B\')"><span class="letra">B</span><span>'+(p.opcion_b||'')+'</span></button><button class="test-op" data-op="C" onclick="responderTest(\'C\')"><span class="letra">C</span><span>'+(p.opcion_c||'')+'</span></button><button class="test-op" data-op="D" onclick="responderTest(\'D\')"><span class="letra">D</span><span>'+(p.opcion_d||'')+'</span></button></div><div id="test-respuesta"></div></div>';
     testActual.respondida = false;
     window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -692,16 +646,7 @@ function responderTest(op){
 
     const esCorrecta = op === correcta;
     const total = testActual.preguntas.length;
-    document.getElementById('test-respuesta').innerHTML = `
-        <div class="test-explic">
-            <strong style="color:${esCorrecta?'var(--verde)':'var(--rojo)'}">${esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto'}</strong><br>
-            <strong>Respuesta correcta:</strong> ${correcta}<br><br>
-            ${p.explicacion||''}
-        </div>
-        <button class="btn btn-prim" onclick="siguientePreguntaTest()">
-            ${testActual.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁'}
-        </button>
-    `;
+    document.getElementById('test-respuesta').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+correcta+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaTest()">'+(testActual.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
 }
 
 function siguientePreguntaTest(){
@@ -723,18 +668,8 @@ async function mostrarResultadoTest(){
     else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
 
     const cont = document.getElementById('contenedor-vista-articulo');
-    cont.innerHTML = `
-        <div class="test-box test-resultado">
-            <div class="ic">${emoji}</div>
-            <h2>Test Completado</h2>
-            <div class="puntaje">${puntaje}/${total}</div>
-            <p>${mensaje}<br>${porcentaje}% de aciertos</p>
-            <button class="btn btn-prim" onclick="iniciarTestArticulo(${testActual.articulo})">🔄 Reintentar</button>
-            <button class="btn" onclick="verArt(arts.find(a=>a.numero===${testActual.articulo}).id)" style="margin-top:8px">⬅ Volver al artículo</button>
-        </div>
-    `;
+    cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestArticulo('+testActual.articulo+')">🔄 Reintentar</button><button class="btn" onclick="volverAlArticulo()" style="margin-top:8px">⬅ Volver al artículo</button></div>';
 
-    // Guardar en usuario
     if(usuarioActual){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
@@ -743,10 +678,7 @@ async function mostrarResultadoTest(){
             const testsPorArt = data.tests_por_articulo || {};
             const key = String(testActual.articulo);
             const prev = testsPorArt[key] || {correctas: 0, total: 0};
-            testsPorArt[key] = {
-                correctas: Math.max(prev.correctas, puntaje),
-                total: total
-            };
+            testsPorArt[key] = {correctas: Math.max(prev.correctas, puntaje), total: total};
             await ref.update({
                 tests_por_articulo: testsPorArt,
                 tests_completados: (data.tests_completados || 0) + 1,
@@ -755,6 +687,12 @@ async function mostrarResultadoTest(){
         }catch(e){ console.error('Error guardando progreso:', e); }
     }
     window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function volverAlArticulo(){
+    const a = arts.find(x => x.numero === testActual.articulo);
+    if(a) verArt(a.id);
+    else mostrarListado();
 }
 
 // =====================================
@@ -767,12 +705,7 @@ function iniciarTestAleatorio(){
         document.getElementById('test-contenedor').innerHTML = '<div class="test-box test-inicio"><div class="ic">⚠️</div><h2>Sin preguntas</h2><p>No se pudieron cargar las preguntas.</p></div>';
         return;
     }
-    testGlobal = {
-        preguntas: preguntas.sort(() => Math.random()-0.5).slice(0,10),
-        indice: 0,
-        puntaje: 0,
-        respondida: false
-    };
+    testGlobal = {preguntas: preguntas.sort(() => Math.random()-0.5).slice(0,10), indice: 0, puntaje: 0, respondida: false};
     mostrarPreguntaGlobal();
 }
 
@@ -784,23 +717,7 @@ function mostrarPreguntaGlobal(){
     const total = testGlobal.preguntas.length;
     const prog = (testGlobal.indice / total) * 100;
 
-    cont.innerHTML = `
-        <div class="test-box">
-            <div class="test-prog">
-                <span>Pregunta ${testGlobal.indice+1} de ${total}</span>
-                <span>✅ ${testGlobal.puntaje} aciertos</span>
-            </div>
-            <div class="test-barra"><div class="test-barra-f" style="width:${prog}%"></div></div>
-            <div class="test-preg">${p.enunciado||''}</div>
-            <div class="test-ops">
-                <button class="test-op" data-op="A" onclick="responderGlobal('A')"><span class="letra">A</span><span>${p.opcion_a||''}</span></button>
-                <button class="test-op" data-op="B" onclick="responderGlobal('B')"><span class="letra">B</span><span>${p.opcion_b||''}</span></button>
-                <button class="test-op" data-op="C" onclick="responderGlobal('C')"><span class="letra">C</span><span>${p.opcion_c||''}</span></button>
-                <button class="test-op" data-op="D" onclick="responderGlobal('D')"><span class="letra">D</span><span>${p.opcion_d||''}</span></button>
-            </div>
-            <div id="test-respuesta-global"></div>
-        </div>
-    `;
+    cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testGlobal.indice+1)+' de '+total+'</span><span>✅ '+testGlobal.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops"><button class="test-op" data-op="A" onclick="responderGlobal(\'A\')"><span class="letra">A</span><span>'+(p.opcion_a||'')+'</span></button><button class="test-op" data-op="B" onclick="responderGlobal(\'B\')"><span class="letra">B</span><span>'+(p.opcion_b||'')+'</span></button><button class="test-op" data-op="C" onclick="responderGlobal(\'C\')"><span class="letra">C</span><span>'+(p.opcion_c||'')+'</span></button><button class="test-op" data-op="D" onclick="responderGlobal(\'D\')"><span class="letra">D</span><span>'+(p.opcion_d||'')+'</span></button></div><div id="test-respuesta-global"></div></div>';
     testGlobal.respondida = false;
     window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -824,16 +741,7 @@ function responderGlobal(op){
 
     const esCorrecta = op === correcta;
     const total = testGlobal.preguntas.length;
-    document.getElementById('test-respuesta-global').innerHTML = `
-        <div class="test-explic">
-            <strong style="color:${esCorrecta?'var(--verde)':'var(--rojo)'}">${esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto'}</strong><br>
-            <strong>Respuesta correcta:</strong> ${correcta}<br><br>
-            ${p.explicacion||''}
-        </div>
-        <button class="btn btn-prim" onclick="siguientePreguntaGlobal()">
-            ${testGlobal.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁'}
-        </button>
-    `;
+    document.getElementById('test-respuesta-global').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+correcta+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaGlobal()">'+(testGlobal.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
 }
 
 function siguientePreguntaGlobal(){
@@ -855,15 +763,7 @@ async function mostrarResultadoGlobal(){
     else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
 
     const cont = document.getElementById('test-contenedor');
-    cont.innerHTML = `
-        <div class="test-box test-resultado">
-            <div class="ic">${emoji}</div>
-            <h2>Test Legal Completado</h2>
-            <div class="puntaje">${puntaje}/${total}</div>
-            <p>${mensaje}<br>${porcentaje}% de aciertos</p>
-            <button class="btn btn-prim" onclick="iniciarTestAleatorio()">🔄 Reintentar</button>
-        </div>
-    `;
+    cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Legal Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestAleatorio()">🔄 Reintentar</button></div>';
 
     if(usuarioActual){
         try{
@@ -885,14 +785,7 @@ async function mostrarResultadoGlobal(){
 async function mostrarPerfil(){
     const cont = document.getElementById('perfil-contenedor');
     if(!usuarioActual){
-        cont.innerHTML = `
-            <div class="perfil-box">
-                <div class="ic" style="font-size:60px;margin-bottom:16px">👤</div>
-                <h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Mi Perfil</h2>
-                <p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Inicia sesión para guardar tu progreso</p>
-                <button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión</button>
-            </div>
-        `;
+        cont.innerHTML = '<div class="perfil-box"><div class="ic" style="font-size:60px;margin-bottom:16px">👤</div><h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Mi Perfil</h2><p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Inicia sesión para guardar tu progreso</p><button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión</button></div>';
         return;
     }
 
@@ -907,24 +800,9 @@ async function mostrarPerfil(){
         const artsLeidos = (data.articulos_leidos || []).length;
         const racha = data.racha_dias || 0;
         const porcentaje = tests > 0 ? Math.round((aciertos / (tests * 10)) * 100) : 0;
-
         const inicial = nombre.charAt(0).toUpperCase();
 
-        cont.innerHTML = `
-            <div class="perfil-box">
-                ${usuarioActual.photoURL ? '<img src="'+usuarioActual.photoURL+'">' : '<div class="perfil-avatar">'+inicial+'</div>'}
-                <div class="perfil-nombre">${nombre}</div>
-                <div class="perfil-email">${email}</div>
-                <div class="perfil-plan">${plan}</div>
-                <div class="stats-grid">
-                    <div class="stat-item"><span class="num">${artsLeidos}</span><span class="lbl">Artículos leídos</span></div>
-                    <div class="stat-item"><span class="num">${tests}</span><span class="lbl">Tests completados</span></div>
-                    <div class="stat-item"><span class="num">${porcentaje}%</span><span class="lbl">Aciertos</span></div>
-                    <div class="stat-item"><span class="num">${racha}</span><span class="lbl">Racha días</span></div>
-                </div>
-                <button class="btn" onclick="cerrarSesion()" style="margin-top:20px">🚪 Cerrar Sesión</button>
-            </div>
-        `;
+        cont.innerHTML = '<div class="perfil-box">' + (usuarioActual.photoURL ? '<img src="'+usuarioActual.photoURL+'">' : '<div class="perfil-avatar">'+inicial+'</div>') + '<div class="perfil-nombre">'+nombre+'</div><div class="perfil-email">'+email+'</div><div class="perfil-plan">'+plan+'</div><div class="stats-grid"><div class="stat-item"><span class="num">'+artsLeidos+'</span><span class="lbl">Artículos leídos</span></div><div class="stat-item"><span class="num">'+tests+'</span><span class="lbl">Tests completados</span></div><div class="stat-item"><span class="num">'+porcentaje+'%</span><span class="lbl">Aciertos</span></div><div class="stat-item"><span class="num">'+racha+'</span><span class="lbl">Racha días</span></div></div><button class="btn" onclick="cerrarSesion()" style="margin-top:20px">🚪 Cerrar Sesión</button></div>';
     }catch(e){
         console.error('Error perfil:', e);
         cont.innerHTML = '<div class="perfil-box"><p style="color:var(--rojo)">Error al cargar perfil</p></div>';
@@ -951,8 +829,7 @@ function buscar(t){
         cont.innerHTML = '<div class="msg-v"><div class="ic">🔍</div><p>No se encontraron artículos con "<strong>'+t+'</strong>"</p></div>';
         return;
     }
-    cont.innerHTML = '<div style="padding:8px 0;color:var(--mut);font-size:13px;margin-bottom:8px">'+res.length+' resultado(s) para "<strong style="color:var(--acc)">'+t+'</strong>"</div>' +
-        res.map(a => '<div class="art-card" onclick="verArt(\''+a.id+'\')"><span class="art-num">Art. '+(a.numero||'?')+'</span><div class="art-tit">'+(a.titulo||'')+'</div><div class="art-prev">'+(a.texto_oficial||'').substring(0,150)+'...</div></div>').join('');
+    cont.innerHTML = '<div style="padding:8px 0;color:var(--mut);font-size:13px;margin-bottom:8px">'+res.length+' resultado(s) para "<strong style="color:var(--acc)">'+t+'</strong>"</div>' + res.map(a => '<div class="art-card" onclick="verArt(\''+a.id+'\')"><span class="art-num">Art. '+(a.numero||'?')+'</span><div class="art-tit">'+(a.titulo||'')+'</div><div class="art-prev">'+(a.texto_oficial||'').substring(0,150)+'...</div></div>').join('');
 }
 document.getElementById('input-busqueda').addEventListener('input', e => buscar(e.target.value));
 

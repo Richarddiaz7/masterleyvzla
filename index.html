@@ -1,1 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máster Ley Vzla IA</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --bg: #0a2540;
+            --bg-secondary: #0f2d4a;
+            --card: #1e3a5f;
+            --card-hover: #294a6f;
+            --accent: #c9a227;
+            --accent-hover: #d4af37;
+            --text: #e8eef5;
+            --text-secondary: #b0c4de;
+            --muted: #7a8fa8;
+            --border: #294a6f;
+            --header-gradient: linear-gradient(135deg, #0a2540 0%, #1e3a5f 100%);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
 
+        body.tema-claro {
+            --bg: #f8f6f0;
+            --bg-secondary: #ffffff;
+            --card: #ffffff;
+            --card-hover: #f0ede4;
+            --accent: #8b6914;
+            --accent-hover: #a67c00;
+            --text: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --muted: #7a7a7a;
+            --border: #d4d0c4;
+            --header-gradient: linear-gradient(135deg, #f8f6f0 0%, #e8e4d8 100%);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 0 0 80px 0;
+            line-height: 1.5;
+            transition: background 0.3s, color 0.3s;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: var(--header-gradient);
+            padding: 24px 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(201, 162, 39, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(45, 106, 79, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--accent);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
+            margin-top: 4px;
+        }
+
+        .header .escudo {
+            font-size: 36px;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .buscador-container {
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .buscador-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            transition: border-color 0.2s;
+        }
+
+        .buscador-wrapper:focus-within {
+            border-color: var(--accent);
+        }
+
+        .buscador-wrapper .lupa {
+            font-size: 18px;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+
+        .buscador-wrapper input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-size: 15px;
+            font-family: inherit;
+        }
+
+        .buscador-wrapper input::placeholder {
+            color: var(--muted);
+        }
+
+        .btn-limpiar {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 4px;
+            display: none;
+        }
+
+        .btn-limpiar.visible {
+            display: block;
+        }
+
+        .contenedor {
+            padding: 16px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .articulo-card {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .articulo-card:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .articulo-numero {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: bold;
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .articulo-titulo {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .articulo-capitulo {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .articulo-preview {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .vista-articulo {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .vista-articulo .cabecera {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+
+        .vista-articulo .numero-grande {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: bold;
+            font-size: 16px;
+            padding: 6px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .vista-articulo .titulo-articulo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .vista-articulo .capitulo-articulo {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .vista-articulo .texto-oficial {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text);
+            white-space: pre-wrap;
+            text-align: justify;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--card-hover);
+        }
+
+        .tabs-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 10px;
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px 4px;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 11px;
+            transition: color 0.2s;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+        }
+
+        .tab-item.activo {
+            color: var(--accent);
+        }
+
+        .tab-item .tab-icono {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .pantalla {
+            display: none;
+        }
+
+        .pantalla.activa {
+            display: block;
+        }
+
+        .opciones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+
+        .opcion {
+            padding: 16px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .opcion:hover {
+            background: var(--card-hover);
+        }
+
+        .opcion.correct {
+            border-color: #10b981;
+            background: #064e3b;
+            color: #fff;
+        }
+
+        .opcion.incorrect {
+            border-color: #ef4444;
+            background: #7f1d1d;
+            color: #fff;
+        }
+
+        .explicacion-box {
+            background: var(--bg-secondary);
+            padding: 14px;
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            margin-top: 14px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .ajuste-item {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ajuste-info h3 {
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .ajuste-info p {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border);
+            transition: .3s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        .switch input:checked + .slider {
+            background-color: var(--accent);
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: var(--bg);
+        }
+
+        .hidden { display: none !important; }
+
+        .mensaje-vacio {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+        .mensaje-vacio .icono {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .cargando {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+        }
+
+        .titulo-grupo {
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--accent);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .titulo-grupo:hover {
+            background: var(--card);
+        }
+
+        .titulo-grupo h3 {
+            font-size: 14px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .titulo-grupo .flecha {
+            color: var(--muted);
+            transition: transform 0.2s;
+        }
+
+        .titulo-grupo.abierto .flecha {
+            transform: rotate(90deg);
+        }
+
+        .articulos-grupo {
+            margin-left: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .articulos-grupo.abierto {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="escudo">⚖️</div>
+        <h1>Máster Ley Vzla IA</h1>
+        <p class="subtitle">Constitución de la República Bolivariana de Venezuela</p>
+    </div>
+
+    <div id="pantalla-constitucion" class="pantalla activa">
+        <div class="buscador-container">
+            <div class="buscador-wrapper">
+                <span class="lupa">🔍</span>
+                <input type="text" id="input-busqueda" placeholder="Buscar por número, título o palabra..." autocomplete="off">
+                <button class="btn-limpiar" id="btn-limpiar">✕</button>
+            </div>
+        </div>
+
+        <div class="contenedor" id="contenedor-articulos">
+            <div class="cargando">Cargando Constitución...</div>
+        </div>
+
+        <div class="contenedor hidden" id="contenedor-vista-articulo"></div>
+    </div>
+
+    <div id="pantalla-trivia" class="pantalla">
+        <div class="contenedor">
+            <div style="background: var(--card); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border);">
+                <div style="font-size: 40px; margin-bottom: 10px;">🎯</div>
+                <h2 style="color: var(--accent); font-size: 18px; margin-bottom: 8px;">Modo Trivia</h2>
+                <p style="color: var(--muted); font-size: 13px;">La trivia mejorada estará disponible en la próxima fase. Por ahora, puedes estudiar la Constitución completa.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="pantalla-ajustes" class="pantalla">
+        <div class="contenedor">
+            <div class="ajuste-item">
+                <div class="ajuste-info">
+                    <h3>🌙 Modo oscuro</h3>
+                    <p>Cambia entre tema oscuro y claro</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="switch-tema" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="ajuste-item">
+                <div class="ajuste-info">
+                    <h3>📱 Versión</h3>
+                    <p>Máster Ley Vzla IA · v1.0</p>
+                </div>
+            </div>
+
+            <div class="ajuste-item">
+                <div class="ajuste-info">
+                    <h3>📚 Fuente oficial</h3>
+                    <p>Gaceta Oficial N° 5.908 · Enmienda N° 1 (2009)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs-bar">
+        <button class="tab-item activo" data-pantalla="constitucion">
+            <span class="tab-icono">🏛️</span>
+            Constitución
+        </button>
+        <button class="tab-item" data-pantalla="trivia">
+            <span class="tab-icono">🎯</span>
+            Trivia
+        </button>
+        <button class="tab-item" data-pantalla="ajustes">
+            <span class="tab-icono">⚙️</span>
+            Ajustes
+        </button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOecJaAR2WJ8MW-WRSEqoxUYGEgxenxK8",
+            authDomain: "masterleyvzla.firebaseapp.com",
+            projectId: "masterleyvzla",
+            storageBucket: "masterleyvzla.firebasestorage.app",
+            messagingSenderId: "178092366571",
+            appId: "1:178092366571:web:1c64f7cc911ceb6778bcae"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let todosLosArticulos = [];
+        let articuloActual = null;
+
+        function aplicarTema(temaOscuro) {
+            if (temaOscuro) {
+                document.body.classList.remove('tema-claro');
+            } else {
+                document.body.classList.add('tema-claro');
+            }
+            localStorage.setItem('tema_oscuro', temaOscuro ? '1' : '0');
+        }
+
+        function cargarTemaGuardado() {
+            const guardado = localStorage.getItem('tema_oscuro');
+            const esOscuro = guardado === null ? true : guardado === '1';
+            document.getElementById('switch-tema').checked = esOscuro;
+            aplicarTema(esOscuro);
+        }
+
+        function cambiarPantalla(nombrePantalla) {
+            document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+            document.getElementById('pantalla-' + nombrePantalla).classList.add('activa');
+
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('activo'));
+            document.querySelector('.tab-item[data-pantalla="' + nombrePantalla + '"]').classList.add('activo');
+
+            if (nombrePantalla === 'constitucion') {
+                mostrarListado();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.addEventListener('click', () => {
+                cambiarPantalla(tab.dataset.pantalla);
+            });
+        });
+
+        async function cargarArticulos() {
+            try {
+                const snapshot = await db.collection('articulos').orderBy('orden', 'asc').get();
+                todosLosArticulos = [];
+                snapshot.forEach(doc => {
+                    todosLosArticulos.push({ id: doc.id, ...doc.data() });
+                });
+                mostrarListado();
+            } catch (error) {
+                console.error('Error al cargar artículos:', error);
+                document.getElementById('contenedor-articulos').innerHTML = `
+                    <div class="mensaje-vacio">
+                        <div class="icono">⚠️</div>
+                        <p>Error al cargar la Constitución. Revisa tu conexión.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function mostrarListado() {
+            document.getElementById('contenedor-articulos').classList.remove('hidden');
+            document.getElementById('contenedor-vista-articulo').classList.add('hidden');
+            articuloActual = null;
+
+            const contenedor = document.getElementById('contenedor-articulos');
+            if (todosLosArticulos.length === 0) {
+                contenedor.innerHTML = '<div class="cargando">Cargando...</div>';
+                return;
+            }
+
+            const grupos = {};
+            todosLosArticulos.forEach(art => {
+                const clave = art.capitulo || 'Sin capítulo';
+                if (!grupos[clave]) grupos[clave] = [];
+                grupos[clave].push(art);
+            });
+
+            let html = '';
+            Object.keys(grupos).forEach(capitulo => {
+                const arts = grupos[capitulo];
+                const primerNum = arts[0].numero;
+                const ultimoNum = arts[arts.length - 1].numero;
+                html += `
+                    <div class="titulo-grupo" onclick="toggleGrupo(this)">
+                        <h3>📖 ${capitulo} <span style="color: var(--muted); font-weight: normal; font-size: 12px;">(${arts.length} arts. · ${primerNum}-${ultimoNum})</span></h3>
+                        <span class="flecha">▶</span>
+                    </div>
+                    <div class="articulos-grupo">
+                        ${arts.map(art => `
+                            <div class="articulo-card" onclick="verArticulo('${art.id}')">
+                                <span class="articulo-numero">Art. ${art.numero}</span>
+                                <div class="articulo-titulo">${art.titulo || ''}</div>
+                                <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 120)}...</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            });
+
+            contenedor.innerHTML = html;
+
+            const primerGrupo = contenedor.querySelector('.titulo-grupo');
+            if (primerGrupo) toggleGrupo(primerGrupo);
+        }
+
+        function toggleGrupo(el) {
+            el.classList.toggle('abierto');
+            const grupo = el.nextElementSibling;
+            if (grupo) grupo.classList.toggle('abierto');
+        }
+
+        function verArticulo(id) {
+            const art = todosLosArticulos.find(a => a.id === id);
+            if (!art) return;
+            articuloActual = art;
+
+            document.getElementById('contenedor-articulos').classList.add('hidden');
+            const vista = document.getElementById('contenedor-vista-articulo');
+            vista.classList.remove('hidden');
+
+            vista.innerHTML = `
+                <div class="vista-articulo">
+                    <div class="cabecera">
+                        <span class="numero-grande">Artículo ${art.numero}</span>
+                        <div class="titulo-articulo">${art.titulo || ''}</div>
+                        <div class="capitulo-articulo">${art.capitulo || ''}</div>
+                    </div>
+                    <div class="texto-oficial">${art.texto_oficial || ''}</div>
+                    <button class="btn btn-secondary" onclick="mostrarListado()">⬅ Volver al índice</button>
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function buscar(termino) {
+            const contenedor = document.getElementById('contenedor-articulos');
+            document.getElementById('contenedor-vista-articulo').classList.add('hidden');
+            contenedor.classList.remove('hidden');
+
+            if (!termino || termino.trim() === '') {
+                mostrarListado();
+                return;
+            }
+
+            const t = termino.toLowerCase().trim();
+            const resultados = todosLosArticulos.filter(art => {
+                const num = String(art.numero || '');
+                const titulo = (art.titulo || '').toLowerCase();
+                const texto = (art.texto_oficial || '').toLowerCase();
+                const capitulo = (art.capitulo || '').toLowerCase();
+                return num.includes(t) || titulo.includes(t) || texto.includes(t) || capitulo.includes(t);
+            });
+
+            if (resultados.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="mensaje-vacio">
+                        <div class="icono">🔍</div>
+                        <p>No se encontraron artículos con "<strong>${termino}</strong>"</p>
+                    </div>
+                `;
+                return;
+            }
+
+            contenedor.innerHTML = `
+                <div style="padding: 8px 0; color: var(--muted); font-size: 13px; margin-bottom: 8px;">
+                    ${resultados.length} resultado(s) para "<strong style="color: var(--accent);">${termino}</strong>"
+                </div>
+                ${resultados.map(art => `
+                    <div class="articulo-card" onclick="verArticulo('${art.id}')">
+                        <span class="articulo-numero">Art. ${art.numero}</span>
+                        <div class="articulo-titulo">${art.titulo || ''}</div>
+                        <div class="articulo-preview">${(art.texto_oficial || '').substring(0, 150)}...</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        document.getElementById('input-busqueda').addEventListener('input', (e) => {
+            const valor = e.target.value;
+            document.getElementById('btn-limpiar').classList.toggle('visible', valor.length > 0);
+            buscar(valor);
+        });
+
+        document.getElementById('btn-limpiar').addEventListener('click', () => {
+            document.getElementById('input-busqueda').value = '';
+            document.getElementById('btn-limpiar').classList.remove('visible');
+            mostrarListado();
+        });
+
+        document.getElementById('switch-tema').addEventListener('change', (e) => {
+            aplicarTema(e.target.checked);
+        });
+
+        cargarTemaGuardado();
+        cargarArticulos();
+    </script>
+</body>
+</html>

@@ -267,7 +267,13 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 <p><strong>No sustituye la asesoría legal profesional.</strong> Para casos específicos, siempre consulte a un abogado debidamente certificado.</p>
 <p>El desarrollador no se hace responsable por el uso indebido de la información contenida en esta aplicación.</p>
 </div>
-
+<div class="acerca-card">
+<h3>🌙 Tema de la App</h3>
+<label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer">
+<input type="checkbox" id="switch-tema" checked>
+<span style="font-size:14px;color:var(--txt2)">Modo oscuro</span>
+</label>
+</div>
 <div class="acerca-card">
 <h3>🔒 Privacidad y Términos</h3>
 <p><strong>Datos que recopilamos:</strong> Nombre, correo electrónico y progreso de aprendizaje (artículos leídos, tests completados).</p>
@@ -357,6 +363,8 @@ function aplicarTema(oscuro){
 function cargarTema(){
     const g = localStorage.getItem('tema_oscuro');
     const oscuro = g === null ? true : g === '1';
+    const sw = document.getElementById('switch-tema');
+    if(sw) sw.checked = oscuro;
     aplicarTema(oscuro);
 }
 
@@ -593,6 +601,8 @@ function mostrarListado(){
     });
 
     let html = '';
+    let contadorId = 0; // ✅ Contador global para IDs únicos
+
     ord.forEach(nt => {
         if(!nt || typeof nt !== 'string') return;
         const g = grupos[nt];
@@ -602,7 +612,7 @@ function mostrarListado(){
         const un = aN && aN.numero ? aN.numero : '?';
         const nc = NOMBRES[nt] || nt;
         const tieneCaps = Object.keys(g.caps).length > 0;
-        const id = 'tit-' + idSeguro(nt);
+        const id = 'tit-' + (contadorId++); // ✅ ID único
 
         html += '<div class="tit-enc" onclick="toggleT(this,\''+id+'\')"><div><div class="tit-num">'+nt.toUpperCase()+'</div><div class="tit-nom">'+nc+'</div></div><span class="fl">▶</span></div>';
         html += '<div class="tit-cont" id="'+id+'">';
@@ -614,7 +624,8 @@ function mostrarListado(){
                 if(!ac || ac.length === 0) return;
                 const p2 = ac[0] && ac[0].numero ? ac[0].numero : '?';
                 const u2 = ac[ac.length-1] && ac[ac.length-1].numero ? ac[ac.length-1].numero : '?';
-                const idc = 'cap-' + idSeguro(nc2);
+                const idc = 'cap-' + (contadorId++); // ✅ ID único
+
                 html += '<div class="cap-enc" onclick="toggleC(event,this,\''+idc+'\')"><div><div class="cap-nom">'+nc2.toUpperCase()+'</div><div class="cap-ran">'+ac.length+' artículos · '+p2+'-'+u2+'</div></div><span class="flc">▶</span></div>';
                 html += '<div class="cap-cont" id="'+idc+'">';
                 html += ac.map(a => renderCard(a)).join('');
@@ -936,6 +947,12 @@ document.getElementById('input-busqueda').addEventListener('input', e => buscar(
 // =====================================
 // INICIO
 // =====================================
+// ✅ Activar el toggle de tema
+const swTema = document.getElementById('switch-tema');
+if(swTema){
+    swTema.addEventListener('change', e => aplicarTema(e.target.checked));
+}
+
 cargarTema();
 cargarArticulos();
 cargarPreguntas();

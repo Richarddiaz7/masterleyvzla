@@ -64,15 +64,18 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .tab{flex:1;text-align:center;padding:6px 4px;cursor:pointer;color:var(--mut);font-size:11px;background:transparent;border:none;font-family:inherit}
 .tab.act{color:var(--acc)}
 .tab .ic{display:block;font-size:20px;margin-bottom:2px}
+.tab .ic img{width:22px;height:22px;object-fit:contain}
 .pant{display:none}
 .pant.act{display:block}
 .hidden{display:none!important}
 .msg-v{text-align:center;padding:40px 20px;color:var(--mut)}
 .msg-v .ic{font-size:48px;margin-bottom:12px;opacity:.5}
 .carg{text-align:center;padding:40px 20px;color:var(--mut)}
-.portada{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a2540 0%,#1e3a5f 50%,#8b6914 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999;overflow-y:auto}
+/* PORTADA */
+.portada{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a2540 0%,#1e3a5f 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999;overflow-y:auto}
 .portada.hidden{display:none!important}
-.portada-contenido{text-align:center;max-width:400px;width:100%;animation:fadeIn .6s ease}
+.portada-avila{position:absolute;bottom:0;left:0;right:0;height:50%;background-image:url('https://raw.githubusercontent.com/Richarddiaz7/masterleyvzla/main/img/avila%202.png');background-size:cover;background-position:center bottom;opacity:.15;pointer-events:none}
+.portada-contenido{text-align:center;max-width:400px;width:100%;animation:fadeIn .6s ease;position:relative;z-index:2}
 @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .portada-escudo{font-size:80px;margin-bottom:16px;filter:drop-shadow(0 4px 20px rgba(201,162,39,.5))}
 .portada-titulo{font-size:28px;color:#c9a227;font-weight:bold;letter-spacing:2px;margin-bottom:8px;text-shadow:0 2px 10px rgba(0,0,0,.5)}
@@ -82,6 +85,7 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .portada-botones{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
 .portada-pie{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:11px;color:#7a8fa8}
 .portada-pie span{background:rgba(255,255,255,.05);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,162,39,.2)}
+/* MODAL */
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal.hidden{display:none!important}
 .modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center;position:relative}
@@ -94,6 +98,7 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .modal-cerrar{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--mut);font-size:24px;cursor:pointer}
 .divisor{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--mut);font-size:12px}
 .divisor::before,.divisor::after{content:'';flex:1;height:1px;background:var(--bor)}
+/* TEST */
 .test-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor)}
 .test-inicio{text-align:center;padding:30px 20px}
 .test-inicio .ic{font-size:60px;margin-bottom:16px}
@@ -119,9 +124,10 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .test-resultado .puntaje{font-size:48px;font-weight:bold;color:var(--acc);margin:16px 0}
 .test-resultado p{color:var(--txt2);font-size:15px;margin-bottom:20px}
 .art-test-btn{background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;width:100%;margin-top:16px;font-family:inherit}
+/* PERFIL */
 .perfil-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor);text-align:center}
 .perfil-avatar{width:80px;height:80px;border-radius:50%;background:var(--acc);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;font-weight:bold}
-.perfil-box img{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:block}
+.perfil-box img{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:block;object-fit:cover}
 .perfil-nombre{font-size:18px;font-weight:bold;color:var(--txt);margin-bottom:4px}
 .perfil-email{font-size:13px;color:var(--mut);margin-bottom:16px}
 .perfil-plan{display:inline-block;background:var(--acc);color:var(--bg);padding:4px 14px;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:16px}
@@ -129,11 +135,32 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .stat-item{background:var(--bg2);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--bor)}
 .stat-item .num{font-size:24px;font-weight:bold;color:var(--acc);display:block}
 .stat-item .lbl{font-size:11px;color:var(--mut);margin-top:4px}
+/* ACERCA DE */
+.acerca-card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px}
+.acerca-card h3{color:var(--acc);font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.acerca-card p{color:var(--txt2);font-size:14px;line-height:1.6;margin-bottom:8px}
+.acerca-card ul{color:var(--txt2);font-size:14px;line-height:1.8;padding-left:20px}
+.acerca-card li{margin-bottom:4px}
+.acerca-card a{color:var(--acc);text-decoration:none}
+.acerca-card a:hover{text-decoration:underline}
+.roadmap-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bor)}
+.roadmap-item:last-child{border-bottom:none}
+.roadmap-item .estado{font-size:16px;flex-shrink:0}
+.roadmap-item .texto{font-size:13px;color:var(--txt2);line-height:1.5}
+.dev-card{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.dev-card img{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2px solid var(--acc)}
+.dev-card .info h4{color:var(--txt);font-size:16px;margin-bottom:2px}
+.dev-card .info p{color:var(--mut);font-size:12px;margin:0}
+.contacto-btn{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg2);border:1px solid var(--bor);border-radius:10px;margin-bottom:8px;color:var(--txt);text-decoration:none;font-size:14px;transition:all .2s}
+.contacto-btn:hover{background:var(--cardh);border-color:var(--acc)}
+.contacto-btn .ic{font-size:20px}
 </style>
 </head>
 <body>
 
+<!-- PORTADA -->
 <div id="pantalla-portada" class="portada">
+<div class="portada-avila"></div>
 <div class="portada-contenido">
 <div class="portada-escudo">⚖️</div>
 <h1 class="portada-titulo">MÁSTER LEY VZLA IA</h1>
@@ -142,10 +169,9 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 <p class="portada-pais">Venezuela</p>
 <div class="portada-botones">
 <button class="btn btn-prim" onclick="abrirModalLogin()">🔐 Iniciar Sesión</button>
-<button class="btn" onclick="entrarComoInvitado()">👤 Continuar como Invitado</button>
 </div>
 <div class="portada-pie">
-<span>🏛️ Constitución</span>
+<span>📘 Constitución</span>
 <span>📝 Test Legal</span>
 <span>🤖 Próximamente IA</span>
 </div>
@@ -194,22 +220,60 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 </div>
 </div>
 
-<div id="pantalla-ajustes" class="pant">
+<div id="pantalla-acerca" class="pant">
 <div class="cont">
-<div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px">
-<h3 style="color:var(--txt);font-size:15px">📱 Versión</h3>
-<p style="color:var(--mut);font-size:12px">Máster Ley Vzla IA · v1.0</p>
+<div class="acerca-card">
+<h3>🗺️ Roadmap de la App</h3>
+<div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 1:</strong> Constitución completa (350 artículos)</div></div>
+<div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 2:</strong> Test Legal interactivo</div></div>
+<div class="roadmap-item"><span class="estado">⏳</span><div class="texto"><strong>Fase 3:</strong> Módulo IA consultor legal (en desarrollo)</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 4:</strong> Código Civil</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 5:</strong> Código Penal</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 6:</strong> LOTTT (Ley Orgánica del Trabajo)</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 7:</strong> Publicación en Play Store y App Store</div></div>
 </div>
-<div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px">
-<h3 style="color:var(--txt);font-size:15px">📚 Fuente oficial</h3>
-<p style="color:var(--mut);font-size:12px">Gaceta Oficial N° 5.908 · Enmienda N° 1 (2009)</p>
+
+<div class="acerca-card">
+<h3>👨‍💻 Sobre el Desarrollador</h3>
+<div class="dev-card">
+<img src="https://raw.githubusercontent.com/Richarddiaz7/masterleyvzla/main/img/yo.png" alt="Richard Díaz">
+<div class="info">
+<h4>Richard Díaz</h4>
+<p>Desarrollador y Director</p>
 </div>
-<div style="background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor)">
-<h3 style="color:var(--txt);font-size:15px">🌙 Tema</h3>
-<label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer">
-<input type="checkbox" id="switch-tema" checked>
-<span style="font-size:13px;color:var(--txt2)">Modo oscuro</span>
-</label>
+</div>
+<p>Desarrollador venezolano apasionado por el LegalTech, comprometido con acercar el conocimiento jurídico a todos los ciudadanos. Máster Ley Vzla IA nace como una herramienta para democratizar el acceso a la legislación venezolana.</p>
+</div>
+
+<div class="acerca-card">
+<h3>📞 Contacto</h3>
+<a href="mailto:richareduardodiaz@gmail.com" class="contacto-btn"><span class="ic">📧</span> richareduardodiaz@gmail.com</a>
+<a href="https://wa.me/584142620590" target="_blank" class="contacto-btn"><span class="ic">📱</span> WhatsApp: +58 414-262-0590</a>
+</div>
+
+<div class="acerca-card">
+<h3>📚 Bibliografía</h3>
+<p>Las fuentes utilizadas para la elaboración de esta aplicación son:</p>
+<ul>
+<li>Constitución de la República Bolivariana de Venezuela (Gaceta Oficial N° 5.908 Extraordinario, 19 de febrero de 2009).</li>
+<li>Versión oficial publicada por la Asamblea Nacional Constituyente.</li>
+<li>Versión bilingüe del Tribunal Supremo de Justicia (TSJ).</li>
+</ul>
+</div>
+
+<div class="acerca-card">
+<h3>⚠️ Advertencias de Uso</h3>
+<p><strong>Máster Ley Vzla IA</strong> es una herramienta de consulta y estudio jurídico. La información aquí presentada tiene carácter informativo y educativo.</p>
+<p><strong>No sustituye la asesoría legal profesional.</strong> Para casos específicos, siempre consulte a un abogado debidamente certificado.</p>
+<p>El desarrollador no se hace responsable por el uso indebido de la información contenida en esta aplicación.</p>
+</div>
+
+<div class="acerca-card">
+<h3>🔒 Privacidad y Términos</h3>
+<p><strong>Datos que recopilamos:</strong> Nombre, correo electrónico y progreso de aprendizaje (artículos leídos, tests completados).</p>
+<p><strong>Uso de los datos:</strong> Solo para guardar tu progreso y mejorar tu experiencia. No compartimos tu información con terceros.</p>
+<p><strong>Derechos del usuario:</strong> Puedes solicitar la eliminación de tu cuenta y datos escribiendo a nuestro correo.</p>
+<p><strong>Términos:</strong> Al usar esta app aceptas estos términos. El contenido es propiedad intelectual de sus respectivos autores.</p>
 </div>
 </div>
 </div>
@@ -231,14 +295,15 @@ Continuar con Google
 <button class="btn" onclick="registroEmail()" style="margin-top:8px">Crear cuenta nueva</button>
 <div class="divisor">o</div>
 <button class="btn" onclick="loginInvitado()">👤 Continuar como invitado</button>
+<p style="font-size:11px;color:var(--mut);margin-top:8px">El modo invitado no guarda tu progreso</p>
 </div>
 </div>
 
 <div class="tabs">
-<button class="tab act" data-pantalla="constitucion"><span class="ic">🏛️</span>Constitución</button>
+<button class="tab act" data-pantalla="constitucion"><span class="ic"><img src="https://raw.githubusercontent.com/Richarddiaz7/masterleyvzla/main/img/constitucion.png" alt="Constitución"></span>Constitución</button>
 <button class="tab" data-pantalla="test"><span class="ic">📝</span>Test Legal</button>
 <button class="tab" data-pantalla="perfil"><span class="ic">👤</span>Perfil</button>
-<button class="tab" data-pantalla="ajustes"><span class="ic">⚙️</span>Ajustes</button>
+<button class="tab" data-pantalla="acerca"><span class="ic">ℹ️</span>Acerca de</button>
 </div>
 
 <script>
@@ -281,18 +346,6 @@ function ocultarPortada(){
     document.getElementById('pantalla-portada').classList.add('hidden');
 }
 
-async function entrarComoInvitado(){
-    entrarAppAutorizado = true;
-    ocultarPortada();
-    if(!usuarioActual){
-        try{
-            await auth.signInAnonymously();
-        }catch(e){
-            console.error('Error login invitado:', e);
-        }
-    }
-}
-
 // =====================================
 // TEMA
 // =====================================
@@ -304,10 +357,8 @@ function aplicarTema(oscuro){
 function cargarTema(){
     const g = localStorage.getItem('tema_oscuro');
     const oscuro = g === null ? true : g === '1';
-    document.getElementById('switch-tema').checked = oscuro;
     aplicarTema(oscuro);
 }
-document.getElementById('switch-tema').addEventListener('change', e => aplicarTema(e.target.checked));
 
 // =====================================
 // NAVEGACIÓN
@@ -329,11 +380,10 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 auth.onAuthStateChanged(async (user) => {
     usuarioActual = user;
     esInvitado = user ? user.isAnonymous : false;
-    if(user){
+    if(user && !user.isAnonymous){
         await guardarOActualizarUsuario(user);
     }
     actualizarHeaderAuth();
-    // ✅ Solo ocultar portada si el usuario autorizó explícitamente
     if(user && entrarAppAutorizado){
         ocultarPortada();
     }
@@ -346,7 +396,7 @@ async function guardarOActualizarUsuario(user){
         const hoy = new Date().toISOString().split('T')[0];
         if(!doc.exists){
             await ref.set({
-                nombre: user.displayName || (user.isAnonymous ? 'Invitado' : 'Usuario'),
+                nombre: user.displayName || 'Usuario',
                 email: user.email || '',
                 foto: user.photoURL || '',
                 rol: 'user',
@@ -378,12 +428,10 @@ function actualizarHeaderAuth(){
     }
 }
 
-// ✅ ABRIR MODAL - NO toca la portada
 function abrirModalLogin(){
     document.getElementById('modal-login').classList.remove('hidden');
 }
 
-// ✅ CERRAR MODAL - SOLO cierra el modal, NO toca la portada
 function cerrarModalLogin(){
     document.getElementById('modal-login').classList.add('hidden');
 }
@@ -496,7 +544,6 @@ function idSeguro(t){
     return (t.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'').toLowerCase()) || 'sin-' + Math.random().toString(36).substr(2,9);
 }
 
-// ✅ MEZCLAR OPCIONES para evitar el patrón "siempre es B"
 function mezclarOpciones(p){
     const opciones = [
         {letra:'A', texto: p.opcion_a || ''},
@@ -505,29 +552,18 @@ function mezclarOpciones(p){
         {letra:'D', texto: p.opcion_d || ''}
     ];
     const correctaOriginal = (p.respuesta_correcta || '').toUpperCase();
-    
-    // Encontrar el texto de la respuesta correcta
     let textoCorrecto = '';
     opciones.forEach(o => { if(o.letra === correctaOriginal) textoCorrecto = o.texto; });
-    
-    // Mezclar aleatoriamente
     const mezcladas = opciones.sort(() => Math.random() - 0.5);
-    
-    // Nueva letra correcta
     let nuevaLetra = 'A';
     mezcladas.forEach((o, i) => {
         if(o.texto === textoCorrecto) nuevaLetra = ['A','B','C','D'][i];
     });
-    
-    return {
-        opciones: mezcladas,
-        nuevaCorrecta: nuevaLetra,
-        textoCorrecto: textoCorrecto
-    };
+    return {opciones: mezcladas, nuevaCorrecta: nuevaLetra, textoCorrecto: textoCorrecto};
 }
 
 // =====================================
-// LISTADO DE ARTÍCULOS
+// LISTADO
 // =====================================
 function mostrarListado(){
     document.getElementById('contenedor-articulos').classList.remove('hidden');
@@ -656,7 +692,6 @@ function mostrarPreguntaTest(){
     const p = testActual.preguntas[testActual.indice];
     if(!p){ mostrarResultadoTest(); return; }
 
-    // ✅ Mezclar opciones
     const mezcla = mezclarOpciones(p);
     testActual.opcionesMezcladas = mezcla;
 
@@ -718,7 +753,8 @@ async function mostrarResultadoTest(){
     const cont = document.getElementById('contenedor-vista-articulo');
     cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestArticulo('+testActual.articulo+')">🔄 Reintentar</button><button class="btn" onclick="volverAlArticulo()" style="margin-top:8px">⬅ Volver al artículo</button></div>';
 
-    if(usuarioActual){
+    // ✅ Guardar progreso SOLO si NO es invitado
+    if(usuarioActual && !esInvitado){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
             const doc = await ref.get();
@@ -762,7 +798,6 @@ function mostrarPreguntaGlobal(){
     const p = testGlobal.preguntas[testGlobal.indice];
     if(!p){ mostrarResultadoGlobal(); return; }
 
-    // ✅ Mezclar opciones
     const mezcla = mezclarOpciones(p);
     testGlobal.opcionesMezcladas = mezcla;
 
@@ -824,7 +859,8 @@ async function mostrarResultadoGlobal(){
     const cont = document.getElementById('test-contenedor');
     cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Legal Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestAleatorio()">🔄 Reintentar</button></div>';
 
-    if(usuarioActual){
+    // ✅ Guardar progreso SOLO si NO es invitado
+    if(usuarioActual && !esInvitado){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
             const doc = await ref.get();
@@ -848,11 +884,16 @@ async function mostrarPerfil(){
         return;
     }
 
+    if(esInvitado){
+        cont.innerHTML = '<div class="perfil-box"><div class="ic" style="font-size:60px;margin-bottom:16px">👤</div><h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Modo Invitado</h2><p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Estás usando la app como invitado. Tu progreso NO se guarda.</p><button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión para guardar progreso</button><button class="btn" onclick="cerrarSesion()" style="margin-top:8px">🚪 Salir del modo invitado</button></div>';
+        return;
+    }
+
     try{
         const doc = await db.collection('usuarios').doc(usuarioActual.uid).get();
         const data = doc.data() || {};
         const nombre = data.nombre || usuarioActual.displayName || 'Usuario';
-        const email = data.email || usuarioActual.email || (esInvitado ? 'Cuenta de invitado' : '');
+        const email = data.email || usuarioActual.email || '';
         const plan = data.tipo_cuenta || 'FREE';
         const tests = data.tests_completados || 0;
         const aciertos = data.aciertos_totales || 0;

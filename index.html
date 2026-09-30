@@ -149,7 +149,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .contacto-btn{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg2);border:1px solid var(--bor);border-radius:10px;margin-bottom:8px;color:var(--txt);text-decoration:none;font-size:14px;transition:all .2s}
 .contacto-btn:hover{background:var(--cardh);border-color:var(--acc)}
 .contacto-btn .ic{font-size:20px}
-/* AJUSTES */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bor)}
 .toggle-row:last-child{border-bottom:none}
 .toggle-row-info{flex:1}
@@ -163,7 +162,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .btn-tamano{padding:12px;background:var(--bg2);border:2px solid var(--bor);border-radius:8px;color:var(--txt2);font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;font-weight:500}
 .btn-tamano:hover{border-color:var(--acc)}
 .btn-tamano.activo{border-color:var(--acc);background:rgba(201,162,39,.15);color:var(--acc);font-weight:700}
-/* TAMAÑOS DE LETRA */
 body.tamano-pequena .tex{font-size:13px!important}
 body.tamano-pequena .test-preg{font-size:14px!important}
 body.tamano-pequena .test-op{font-size:13px!important}
@@ -249,7 +247,7 @@ body.tamano-extra .test-explic{font-size:17px!important}
 <div class="cont">
 <div class="acerca-card">
 <h3>🗺️ Roadmap de la App</h3>
-<div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 1:</strong> Constitución completa (350 artículos)</div></div>
+<div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 1:</strong> Constitución completa (350 artículos + Preámbulo)</div></div>
 <div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 2:</strong> Test Legal interactivo</div></div>
 <div class="roadmap-item"><span class="estado">⏳</span><div class="texto"><strong>Fase 3:</strong> Módulo IA consultor legal (en desarrollo)</div></div>
 <div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 4:</strong> Código Civil</div></div>
@@ -402,6 +400,50 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// =====================================
+// PREÁMBULO (hardcodeado)
+// =====================================
+const PREAMBULO = {
+    titulo: "Preámbulo",
+    texto: "El pueblo de Venezuela, en ejercicio de sus poderes creadores e invocando la protección de Dios, el ejemplo histórico de nuestro Libertador Simón Bolívar y el heroísmo y sacrificio de nuestros antepasados aborígenes y de los precursores y forjadores de una patria libre y soberana; con el fin supremo de refundar la República para establecer una sociedad democrática, participativa y protagónica, multiétnica y pluricultural en un Estado de justicia, federal y descentralizado, que consolide los valores de la libertad, la independencia, la paz, la solidaridad, el bien común, la integridad territorial, la convivencia y el imperio de la ley para esta y las futuras generaciones; asegure el derecho a la vida, al trabajo, a la cultura, a la educación, a la justicia social y a la igualdad sin discriminación ni subordinación alguna; promueva la cooperación pacífica entre las naciones e impulse y consolide la integración latinoamericana de acuerdo con el principio de no intervención y autodeterminación de los pueblos, la garantía universal e indivisible de los derechos humanos, la democratización de la sociedad internacional, el desarme nuclear, el equilibrio ecológico y los bienes jurídicos ambientales como patrimonio común e irrenunciable de la humanidad; en ejercicio de su poder originario representado por la Asamblea Nacional Constituyente mediante el voto libre y en referendo democrático, decreta la siguiente CONSTITUCIÓN."
+};
+
+const PREGUNTAS_PREAMBULO = [
+    {
+        articulo_id: 0,
+        enunciado: "Según el Preámbulo, el pueblo de Venezuela decreta la Constitución en ejercicio de:",
+        opcion_a: "La autoridad del Presidente",
+        opcion_b: "Sus poderes creadores",
+        opcion_c: "La decisión de la Asamblea Nacional",
+        opcion_d: "Un decreto militar",
+        respuesta_correcta: "B",
+        explicacion: "El Preámbulo establece que el pueblo de Venezuela decreta la Constitución en ejercicio de sus poderes creadores, invocando la protección de Dios y el ejemplo de Simón Bolívar."
+    },
+    {
+        articulo_id: 0,
+        enunciado: "El Preámbulo invoca la protección de Dios, el ejemplo histórico de Simón Bolívar y:",
+        opcion_a: "La sabiduría de los jueces",
+        opcion_b: "El heroísmo y sacrificio de nuestros antepasados aborígenes",
+        opcion_c: "La fuerza de la Fuerza Armada",
+        opcion_d: "La experiencia de los legisladores",
+        respuesta_correcta: "B",
+        explicacion: "El Preámbulo invoca la protección de Dios, el ejemplo histórico de nuestro Libertador Simón Bolívar y el heroísmo y sacrificio de nuestros antepasados aborígenes y de los precursores y forjadores de una patria libre y soberana."
+    },
+    {
+        articulo_id: 0,
+        enunciado: "Según el Preámbulo, uno de los fines supremos es refundar la República para establecer una sociedad:",
+        opcion_a: "Monárquica y centralizada",
+        opcion_b: "Democrática, participativa y protagónica",
+        opcion_c: "Militar y autoritaria",
+        opcion_d: "Exclusivamente federal",
+        respuesta_correcta: "B",
+        explicacion: "El Preámbulo establece el fin supremo de refundar la República para establecer una sociedad democrática, participativa y protagónica, multiétnica y pluricultural en un Estado de justicia, federal y descentralizado."
+    }
+];
+
+// =====================================
+// ESTADO GLOBAL
+// =====================================
 let arts = [];
 let preguntas = [];
 let artActual = null;
@@ -436,7 +478,6 @@ function aplicarTema(oscuro){
     const sw = document.getElementById('switch-tema');
     if(sw) sw.checked = oscuro;
 }
-
 function cargarTema(){
     const g = localStorage.getItem('tema_oscuro');
     const oscuro = g === null ? true : g === '1';
@@ -454,16 +495,8 @@ function aplicarTamano(tamano){
         b.classList.toggle('activo', b.dataset.tamano === tamano);
     });
 }
-
-function cambiarTamano(tamano){
-    aplicarTamano(tamano);
-    vibrar(30);
-}
-
-function cargarTamano(){
-    const t = localStorage.getItem('tamano_letra') || 'normal';
-    aplicarTamano(t);
-}
+function cambiarTamano(tamano){ aplicarTamano(tamano); vibrar(30); }
+function cargarTamano(){ aplicarTamano(localStorage.getItem('tamano_letra') || 'normal'); }
 
 // =====================================
 // VIBRACIÓN
@@ -471,16 +504,14 @@ function cargarTamano(){
 function vibrar(ms){
     const vib = localStorage.getItem('vibracion');
     const activo = vib === null ? true : vib === '1';
-    if(activo && navigator.vibrate){
-        navigator.vibrate(ms || 50);
-    }
+    if(activo && navigator.vibrate) navigator.vibrate(ms || 50);
 }
 
 // =====================================
 // BORRAR CACHÉ
 // =====================================
 function borrarCache(){
-    if(confirm('¿Borrar todos los datos locales? Se cerrará tu sesión y se perderán las preferencias. Esta acción no se puede deshacer.')){
+    if(confirm('¿Borrar todos los datos locales? Se cerrará tu sesión y se perderán las preferencias.')){
         localStorage.clear();
         sessionStorage.clear();
         if(auth) auth.signOut().finally(() => location.reload());
@@ -508,13 +539,9 @@ document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () =>
 auth.onAuthStateChanged(async (user) => {
     usuarioActual = user;
     esInvitado = user ? user.isAnonymous : false;
-    if(user && !user.isAnonymous){
-        await guardarOActualizarUsuario(user);
-    }
+    if(user && !user.isAnonymous) await guardarOActualizarUsuario(user);
     actualizarHeaderAuth();
-    if(user && entrarAppAutorizado){
-        ocultarPortada();
-    }
+    if(user && entrarAppAutorizado) ocultarPortada();
 });
 
 async function guardarOActualizarUsuario(user){
@@ -540,9 +567,7 @@ async function guardarOActualizarUsuario(user){
         } else {
             await ref.update({ ultimo_acceso: hoy });
         }
-    }catch(e){
-        console.error('Error guardando usuario:', e);
-    }
+    }catch(e){ console.error('Error guardando usuario:', e); }
 }
 
 function actualizarHeaderAuth(){
@@ -556,13 +581,8 @@ function actualizarHeaderAuth(){
     }
 }
 
-function abrirModalLogin(){
-    document.getElementById('modal-login').classList.remove('hidden');
-}
-
-function cerrarModalLogin(){
-    document.getElementById('modal-login').classList.add('hidden');
-}
+function abrirModalLogin(){ document.getElementById('modal-login').classList.remove('hidden'); }
+function cerrarModalLogin(){ document.getElementById('modal-login').classList.add('hidden'); }
 
 async function loginGoogle(){
     try{
@@ -576,7 +596,6 @@ async function loginGoogle(){
         alert('Error: ' + e.message);
     }
 }
-
 async function loginEmail(){
     const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
@@ -591,7 +610,6 @@ async function loginEmail(){
         alert('Error: ' + e.message);
     }
 }
-
 async function registroEmail(){
     const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
@@ -607,7 +625,6 @@ async function registroEmail(){
         alert('Error: ' + e.message);
     }
 }
-
 async function loginInvitado(){
     try{
         entrarAppAutorizado = true;
@@ -619,7 +636,6 @@ async function loginInvitado(){
         alert('Error: ' + e.message);
     }
 }
-
 async function cerrarSesion(){
     if(confirm('¿Cerrar sesión?')){
         entrarAppAutorizado = false;
@@ -644,16 +660,13 @@ async function cargarArticulos(){
         document.getElementById('contenedor-articulos').innerHTML = '<div class="msg-v"><div class="ic">⚠️</div><p>Error al cargar. Revisa tu conexión.</p></div>';
     }
 }
-
 async function cargarPreguntas(){
     try{
         const snap = await db.collection('preguntas').get();
         preguntas = [];
         snap.forEach(d => preguntas.push({id: d.id, ...d.data()}));
         console.log('✅ Preguntas cargadas:', preguntas.length);
-    }catch(e){
-        console.error('Error al cargar preguntas:', e);
-    }
+    }catch(e){ console.error('Error al cargar preguntas:', e); }
 }
 
 // =====================================
@@ -679,14 +692,12 @@ function mezclarOpciones(p){
     opciones.forEach(o => { if(o.letra === correctaOriginal) textoCorrecto = o.texto; });
     const mezcladas = opciones.sort(() => Math.random() - 0.5);
     let nuevaLetra = 'A';
-    mezcladas.forEach((o, i) => {
-        if(o.texto === textoCorrecto) nuevaLetra = ['A','B','C','D'][i];
-    });
+    mezcladas.forEach((o, i) => { if(o.texto === textoCorrecto) nuevaLetra = ['A','B','C','D'][i]; });
     return {opciones: mezcladas, nuevaCorrecta: nuevaLetra, textoCorrecto: textoCorrecto};
 }
 
 // =====================================
-// LISTADO (CON IDs ÚNICOS)
+// LISTADO CON PREÁMBULO
 // =====================================
 function mostrarListado(){
     document.getElementById('contenedor-articulos').classList.remove('hidden');
@@ -694,6 +705,15 @@ function mostrarListado(){
     artActual = null;
     const cont = document.getElementById('contenedor-articulos');
     if(arts.length === 0){ cont.innerHTML = '<div class="carg">Cargando...</div>'; return; }
+
+    // ✅ Tarjeta del Preámbulo al inicio
+    let htmlPreambulo = `
+        <div class="art-card" onclick="verPreambulo()" style="border:2px solid var(--acc);background:linear-gradient(135deg,rgba(201,162,39,.15),rgba(201,162,39,.05))">
+            <span class="art-num" style="background:var(--acc);color:var(--bg)">📜 PREÁMBULO</span>
+            <div class="art-tit" style="color:var(--acc);font-weight:700">Preámbulo de la Constitución</div>
+            <div class="art-prev">El pueblo de Venezuela, en ejercicio de sus poderes creadores e invocando la protección de Dios...</div>
+        </div>
+    `;
 
     const grupos = {};
     arts.forEach(a => {
@@ -715,7 +735,7 @@ function mostrarListado(){
         return ia - ib;
     });
 
-    let html = '';
+    let html = htmlPreambulo;
     let contadorId = 0;
 
     ord.forEach(nt => {
@@ -782,6 +802,37 @@ function toggleC(e,el,id){
     if(c) c.classList.toggle('abierto');
 }
 
+// =====================================
+// VER PREÁMBULO
+// =====================================
+function verPreambulo(){
+    document.getElementById('contenedor-articulos').classList.add('hidden');
+    const v = document.getElementById('contenedor-vista-articulo');
+    v.classList.remove('hidden');
+
+    v.innerHTML = `
+        <div class="vista">
+            <div class="cab">
+                <span class="num-g" style="background:var(--acc);color:var(--bg)">📜 PREÁMBULO</span>
+                <div class="tit-a">Preámbulo de la Constitución</div>
+                <div class="cap-a">Constitución de la República Bolivariana de Venezuela</div>
+            </div>
+            <div class="tex">${PREAMBULO.texto}</div>
+            <button class="art-test-btn" onclick="iniciarTestPreambulo()">📝 Hacer test del Preámbulo</button>
+            <button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button>
+        </div>
+    `;
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function iniciarTestPreambulo(){
+    testActual = {preguntas: PREGUNTAS_PREAMBULO, indice: 0, puntaje: 0, respondida: false, articulo: 0, opcionesMezcladas: null};
+    mostrarPreguntaTest();
+}
+
+// =====================================
+// VER ARTÍCULO
+// =====================================
 function verArt(id){
     const a = arts.find(x => x.id === id);
     if(!a) return;
@@ -874,7 +925,7 @@ async function mostrarResultadoTest(){
     else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
 
     const cont = document.getElementById('contenedor-vista-articulo');
-    cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestArticulo('+testActual.articulo+')">🔄 Reintentar</button><button class="btn" onclick="volverAlArticulo()" style="margin-top:8px">⬅ Volver al artículo</button></div>';
+    cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="'+(testActual.articulo === 0 ? 'iniciarTestPreambulo()' : 'iniciarTestArticulo('+testActual.articulo+')')+'">🔄 Reintentar</button><button class="btn" onclick="'+(testActual.articulo === 0 ? 'verPreambulo()' : 'volverAlArticulo()')+'" style="margin-top:8px">⬅ Volver</button></div>';
 
     if(usuarioActual && !esInvitado){
         try{
@@ -907,11 +958,12 @@ function volverAlArticulo(){
 let testGlobal = {preguntas:[], indice:0, puntaje:0, respondida:false, opcionesMezcladas:null};
 
 function iniciarTestAleatorio(){
-    if(preguntas.length === 0){
+    const todas = preguntas.concat(PREGUNTAS_PREAMBULO);
+    if(todas.length === 0){
         document.getElementById('test-contenedor').innerHTML = '<div class="test-box test-inicio"><div class="ic">⚠️</div><h2>Sin preguntas</h2><p>No se pudieron cargar las preguntas.</p></div>';
         return;
     }
-    testGlobal = {preguntas: preguntas.sort(() => Math.random()-0.5).slice(0,10), indice: 0, puntaje: 0, respondida: false, opcionesMezcladas: null};
+    testGlobal = {preguntas: todas.sort(() => Math.random()-0.5).slice(0,10), indice: 0, puntaje: 0, respondida: false, opcionesMezcladas: null};
     mostrarPreguntaGlobal();
 }
 
@@ -1005,12 +1057,10 @@ async function mostrarPerfil(){
         cont.innerHTML = '<div class="perfil-box"><div class="ic" style="font-size:60px;margin-bottom:16px">👤</div><h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Mi Perfil</h2><p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Inicia sesión para guardar tu progreso</p><button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión</button></div>';
         return;
     }
-
     if(esInvitado){
         cont.innerHTML = '<div class="perfil-box"><div class="ic" style="font-size:60px;margin-bottom:16px">👤</div><h2 style="color:var(--acc);font-size:20px;margin-bottom:8px">Modo Invitado</h2><p style="color:var(--txt2);font-size:13px;margin-bottom:20px">Estás usando la app como invitado. Tu progreso NO se guarda.</p><button class="btn btn-prim" onclick="abrirModalLogin()">Iniciar Sesión para guardar progreso</button><button class="btn" onclick="cerrarSesion()" style="margin-top:8px">🚪 Salir del modo invitado</button></div>';
         return;
     }
-
     try{
         const doc = await db.collection('usuarios').doc(usuarioActual.uid).get();
         const data = doc.data() || {};
@@ -1023,7 +1073,6 @@ async function mostrarPerfil(){
         const racha = data.racha_dias || 0;
         const porcentaje = tests > 0 ? Math.round((aciertos / (tests * 10)) * 100) : 0;
         const inicial = nombre.charAt(0).toUpperCase();
-
         cont.innerHTML = '<div class="perfil-box">' + (usuarioActual.photoURL ? '<img src="'+usuarioActual.photoURL+'">' : '<div class="perfil-avatar">'+inicial+'</div>') + '<div class="perfil-nombre">'+nombre+'</div><div class="perfil-email">'+email+'</div><div class="perfil-plan">'+plan+'</div><div class="stats-grid"><div class="stat-item"><span class="num">'+artsLeidos+'</span><span class="lbl">Artículos leídos</span></div><div class="stat-item"><span class="num">'+tests+'</span><span class="lbl">Tests completados</span></div><div class="stat-item"><span class="num">'+porcentaje+'%</span><span class="lbl">Aciertos</span></div><div class="stat-item"><span class="num">'+racha+'</span><span class="lbl">Racha días</span></div></div><button class="btn" onclick="cerrarSesion()" style="margin-top:20px">🚪 Cerrar Sesión</button></div>';
     }catch(e){
         console.error('Error perfil:', e);
@@ -1058,28 +1107,14 @@ document.getElementById('input-busqueda').addEventListener('input', e => buscar(
 // =====================================
 // AJUSTES - EVENTOS
 // =====================================
-document.getElementById('switch-tema').addEventListener('change', e => {
-    aplicarTema(e.target.checked);
-    vibrar(30);
-});
-
-document.getElementById('switch-vibracion').addEventListener('change', e => {
-    localStorage.setItem('vibracion', e.target.checked ? '1' : '0');
-    if(e.target.checked) vibrar(50);
-});
-
-document.getElementById('switch-notificaciones').addEventListener('change', e => {
-    localStorage.setItem('notificaciones', e.target.checked ? '1' : '0');
-    if(e.target.checked && 'Notification' in window){
-        Notification.requestPermission();
-    }
-});
+document.getElementById('switch-tema').addEventListener('change', e => { aplicarTema(e.target.checked); vibrar(30); });
+document.getElementById('switch-vibracion').addEventListener('change', e => { localStorage.setItem('vibracion', e.target.checked ? '1' : '0'); if(e.target.checked) vibrar(50); });
+document.getElementById('switch-notificaciones').addEventListener('change', e => { localStorage.setItem('notificaciones', e.target.checked ? '1' : '0'); if(e.target.checked && 'Notification' in window) Notification.requestPermission(); });
 
 function cargarAjustesExtras(){
     const vib = localStorage.getItem('vibracion');
     const swVib = document.getElementById('switch-vibracion');
     if(swVib) swVib.checked = vib === null ? true : vib === '1';
-    
     const notif = localStorage.getItem('notificaciones');
     const swNotif = document.getElementById('switch-notificaciones');
     if(swNotif) swNotif.checked = notif === '1';

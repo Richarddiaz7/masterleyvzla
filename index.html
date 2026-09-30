@@ -61,7 +61,7 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .btn-google{background:#fff;color:#333;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:10px}
 .btn-google:hover{background:#f5f5f5}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--bor);display:flex;justify-content:space-around;padding:8px 0 10px;z-index:100}
-.tab{flex:1;text-align:center;padding:6px 4px;cursor:pointer;color:var(--mut);font-size:11px;background:transparent;border:none;font-family:inherit}
+.tab{flex:1;text-align:center;padding:6px 4px;cursor:pointer;color:var(--mut);font-size:10px;background:transparent;border:none;font-family:inherit}
 .tab.act{color:var(--acc)}
 .tab .ic{display:block;font-size:20px;margin-bottom:2px}
 .tab .ic img{width:22px;height:22px;object-fit:contain}
@@ -71,7 +71,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .msg-v{text-align:center;padding:40px 20px;color:var(--mut)}
 .msg-v .ic{font-size:48px;margin-bottom:12px;opacity:.5}
 .carg{text-align:center;padding:40px 20px;color:var(--mut)}
-/* PORTADA */
 .portada{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#0a2540 0%,#1e3a5f 100%);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9999;overflow-y:auto}
 .portada.hidden{display:none!important}
 .portada-avila{position:absolute;bottom:0;left:0;right:0;height:50%;background-image:url('https://raw.githubusercontent.com/Richarddiaz7/masterleyvzla/main/img/avila%202.png');background-size:cover;background-position:center bottom;opacity:.15;pointer-events:none}
@@ -85,10 +84,9 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .portada-botones{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
 .portada-pie{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;font-size:11px;color:#7a8fa8}
 .portada-pie span{background:rgba(255,255,255,.05);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,162,39,.2)}
-/* MODAL */
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px}
 .modal.hidden{display:none!important}
-.modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center;position:relative}
+.modal-box{background:var(--card);border-radius:16px;padding:30px 24px;max-width:400px;width:100%;border:1px solid var(--bor);text-align:center;position:relative;max-height:90vh;overflow-y:auto}
 .modal-box .ic{font-size:48px;margin-bottom:12px}
 .modal-box h2{color:var(--acc);font-size:20px;margin-bottom:8px}
 .modal-box p{color:var(--txt2);font-size:13px;margin-bottom:20px}
@@ -98,7 +96,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .modal-cerrar{position:absolute;top:14px;right:14px;background:transparent;border:none;color:var(--mut);font-size:24px;cursor:pointer}
 .divisor{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--mut);font-size:12px}
 .divisor::before,.divisor::after{content:'';flex:1;height:1px;background:var(--bor)}
-/* TEST */
 .test-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor)}
 .test-inicio{text-align:center;padding:30px 20px}
 .test-inicio .ic{font-size:60px;margin-bottom:16px}
@@ -124,7 +121,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .test-resultado .puntaje{font-size:48px;font-weight:bold;color:var(--acc);margin:16px 0}
 .test-resultado p{color:var(--txt2);font-size:15px;margin-bottom:20px}
 .art-test-btn{background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;width:100%;margin-top:16px;font-family:inherit}
-/* PERFIL */
 .perfil-box{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--bor);text-align:center}
 .perfil-avatar{width:80px;height:80px;border-radius:50%;background:var(--acc);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 12px;font-weight:bold}
 .perfil-box img{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:block;object-fit:cover}
@@ -135,7 +131,6 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .stat-item{background:var(--bg2);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--bor)}
 .stat-item .num{font-size:24px;font-weight:bold;color:var(--acc);display:block}
 .stat-item .lbl{font-size:11px;color:var(--mut);margin-top:4px}
-/* ACERCA DE */
 .acerca-card{background:var(--card);border-radius:12px;padding:16px;border:1px solid var(--bor);margin-bottom:12px}
 .acerca-card h3{color:var(--acc);font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .acerca-card p{color:var(--txt2);font-size:14px;line-height:1.6;margin-bottom:8px}
@@ -154,11 +149,41 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .contacto-btn{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg2);border:1px solid var(--bor);border-radius:10px;margin-bottom:8px;color:var(--txt);text-decoration:none;font-size:14px;transition:all .2s}
 .contacto-btn:hover{background:var(--cardh);border-color:var(--acc)}
 .contacto-btn .ic{font-size:20px}
+/* AJUSTES */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bor)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-row-info{flex:1}
+.toggle-row-info .titulo{font-size:14px;color:var(--txt);font-weight:500}
+.toggle-row-info .desc{font-size:12px;color:var(--mut);margin-top:2px}
+.toggle-switch{appearance:none;-webkit-appearance:none;width:48px;height:26px;background:var(--bor);border-radius:13px;position:relative;cursor:pointer;outline:none;transition:background .3s;flex-shrink:0}
+.toggle-switch:checked{background:var(--acc)}
+.toggle-switch::before{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:var(--txt);top:3px;left:3px;transition:transform .3s,background .3s}
+.toggle-switch:checked::before{transform:translateX(22px);background:var(--bg)}
+.tamano-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.btn-tamano{padding:12px;background:var(--bg2);border:2px solid var(--bor);border-radius:8px;color:var(--txt2);font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s;font-weight:500}
+.btn-tamano:hover{border-color:var(--acc)}
+.btn-tamano.activo{border-color:var(--acc);background:rgba(201,162,39,.15);color:var(--acc);font-weight:700}
+/* TAMAÑOS DE LETRA */
+body.tamano-pequena .tex{font-size:13px!important}
+body.tamano-pequena .test-preg{font-size:14px!important}
+body.tamano-pequena .test-op{font-size:13px!important}
+body.tamano-pequena .test-explic{font-size:13px!important}
+body.tamano-normal .tex{font-size:15px!important}
+body.tamano-normal .test-preg{font-size:16px!important}
+body.tamano-normal .test-op{font-size:14px!important}
+body.tamano-normal .test-explic{font-size:14px!important}
+body.tamano-grande .tex{font-size:17px!important}
+body.tamano-grande .test-preg{font-size:18px!important}
+body.tamano-grande .test-op{font-size:16px!important}
+body.tamano-grande .test-explic{font-size:16px!important}
+body.tamano-extra .tex{font-size:20px!important}
+body.tamano-extra .test-preg{font-size:20px!important}
+body.tamano-extra .test-op{font-size:17px!important}
+body.tamano-extra .test-explic{font-size:17px!important}
 </style>
 </head>
-<body>
+<body class="tamano-normal">
 
-<!-- PORTADA -->
 <div id="pantalla-portada" class="portada">
 <div class="portada-avila"></div>
 <div class="portada-contenido">
@@ -267,19 +292,70 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 <p><strong>No sustituye la asesoría legal profesional.</strong> Para casos específicos, siempre consulte a un abogado debidamente certificado.</p>
 <p>El desarrollador no se hace responsable por el uso indebido de la información contenida en esta aplicación.</p>
 </div>
-<div class="acerca-card">
-<h3>🌙 Tema de la App</h3>
-<label style="display:flex;align-items:center;gap:10px;margin-top:10px;cursor:pointer">
-<input type="checkbox" id="switch-tema" checked>
-<span style="font-size:14px;color:var(--txt2)">Modo oscuro</span>
-</label>
-</div>
+
 <div class="acerca-card">
 <h3>🔒 Privacidad y Términos</h3>
 <p><strong>Datos que recopilamos:</strong> Nombre, correo electrónico y progreso de aprendizaje (artículos leídos, tests completados).</p>
 <p><strong>Uso de los datos:</strong> Solo para guardar tu progreso y mejorar tu experiencia. No compartimos tu información con terceros.</p>
 <p><strong>Derechos del usuario:</strong> Puedes solicitar la eliminación de tu cuenta y datos escribiendo a nuestro correo.</p>
 <p><strong>Términos:</strong> Al usar esta app aceptas estos términos. El contenido es propiedad intelectual de sus respectivos autores.</p>
+</div>
+</div>
+</div>
+
+<div id="pantalla-ajustes" class="pant">
+<div class="cont">
+<div class="acerca-card">
+<h3>🎨 Apariencia</h3>
+<div class="toggle-row">
+<div class="toggle-row-info">
+<div class="titulo">🌙 Modo oscuro</div>
+<div class="desc">Cambia entre tema oscuro y claro</div>
+</div>
+<input type="checkbox" id="switch-tema" class="toggle-switch" checked>
+</div>
+</div>
+
+<div class="acerca-card">
+<h3>🔤 Tamaño de Letra</h3>
+<p style="font-size:13px;color:var(--mut);margin-bottom:8px">Ajusta el tamaño del texto en artículos y tests.</p>
+<div class="tamano-grid">
+<button class="btn-tamano" data-tamano="pequena" onclick="cambiarTamano('pequena')">Pequeña</button>
+<button class="btn-tamano activo" data-tamano="normal" onclick="cambiarTamano('normal')">Normal</button>
+<button class="btn-tamano" data-tamano="grande" onclick="cambiarTamano('grande')">Grande</button>
+<button class="btn-tamano" data-tamano="extra" onclick="cambiarTamano('extra')">Extra Grande</button>
+</div>
+</div>
+
+<div class="acerca-card">
+<h3>📱 Experiencia</h3>
+<div class="toggle-row">
+<div class="toggle-row-info">
+<div class="titulo">📳 Vibración</div>
+<div class="desc">Vibrar al responder un test</div>
+</div>
+<input type="checkbox" id="switch-vibracion" class="toggle-switch" checked>
+</div>
+<div class="toggle-row">
+<div class="toggle-row-info">
+<div class="titulo">🔔 Notificaciones</div>
+<div class="desc">Recordatorio diario de estudio</div>
+</div>
+<input type="checkbox" id="switch-notificaciones" class="toggle-switch">
+</div>
+</div>
+
+<div class="acerca-card">
+<h3>📊 Información</h3>
+<p><strong>Versión:</strong> 1.0.0</p>
+<p><strong>Fuente oficial:</strong> Gaceta Oficial N° 5.908 · Enmienda N° 1 (2009)</p>
+<p><strong>Desarrollador:</strong> Richard Díaz</p>
+</div>
+
+<div class="acerca-card">
+<h3>⚠️ Zona de Peligro</h3>
+<p style="font-size:13px;color:var(--mut);margin-bottom:12px">Estas acciones no se pueden deshacer.</p>
+<button class="btn" onclick="borrarCache()" style="border-color:var(--rojo);color:var(--rojo)">🗑️ Borrar caché local</button>
 </div>
 </div>
 </div>
@@ -306,10 +382,11 @@ Continuar con Google
 </div>
 
 <div class="tabs">
-<button class="tab act" data-pantalla="constitucion"><span class="ic"><img src="https://raw.githubusercontent.com/Richarddiaz7/masterleyvzla/main/img/constitucion.png" alt="Constitución"></span>Constitución</button>
-<button class="tab" data-pantalla="test"><span class="ic">📝</span>Test Legal</button>
+<button class="tab act" data-pantalla="constitucion"><span class="ic"><img src="https://raw.githubusercontent.com/Richarddiaz7/masterleyvzla/main/img/constitucion.png" alt="C"></span>Constitución</button>
+<button class="tab" data-pantalla="test"><span class="ic">📝</span>Test</button>
 <button class="tab" data-pantalla="perfil"><span class="ic">👤</span>Perfil</button>
-<button class="tab" data-pantalla="acerca"><span class="ic">ℹ️</span>Acerca de</button>
+<button class="tab" data-pantalla="acerca"><span class="ic">ℹ️</span>Acerca</button>
+<button class="tab" data-pantalla="ajustes"><span class="ic">⚙️</span>Ajustes</button>
 </div>
 
 <script>
@@ -345,9 +422,6 @@ const NOMBRES = {
 };
 const ORDEN = ["Título I","Título II","Título III","Título IV","Título V","Título VI","Título VII","Título VIII","Título IX"];
 
-// =====================================
-// PORTADA
-// =====================================
 function ocultarPortada(){
     document.getElementById('pantalla-portada').classList.add('hidden');
 }
@@ -359,13 +433,59 @@ function aplicarTema(oscuro){
     if(oscuro) document.body.classList.remove('claro');
     else document.body.classList.add('claro');
     localStorage.setItem('tema_oscuro', oscuro ? '1' : '0');
+    const sw = document.getElementById('switch-tema');
+    if(sw) sw.checked = oscuro;
 }
+
 function cargarTema(){
     const g = localStorage.getItem('tema_oscuro');
     const oscuro = g === null ? true : g === '1';
-    const sw = document.getElementById('switch-tema');
-    if(sw) sw.checked = oscuro;
     aplicarTema(oscuro);
+}
+
+// =====================================
+// TAMAÑO DE LETRA
+// =====================================
+function aplicarTamano(tamano){
+    document.body.classList.remove('tamano-pequena', 'tamano-normal', 'tamano-grande', 'tamano-extra');
+    document.body.classList.add('tamano-' + tamano);
+    localStorage.setItem('tamano_letra', tamano);
+    document.querySelectorAll('.btn-tamano').forEach(b => {
+        b.classList.toggle('activo', b.dataset.tamano === tamano);
+    });
+}
+
+function cambiarTamano(tamano){
+    aplicarTamano(tamano);
+    vibrar(30);
+}
+
+function cargarTamano(){
+    const t = localStorage.getItem('tamano_letra') || 'normal';
+    aplicarTamano(t);
+}
+
+// =====================================
+// VIBRACIÓN
+// =====================================
+function vibrar(ms){
+    const vib = localStorage.getItem('vibracion');
+    const activo = vib === null ? true : vib === '1';
+    if(activo && navigator.vibrate){
+        navigator.vibrate(ms || 50);
+    }
+}
+
+// =====================================
+// BORRAR CACHÉ
+// =====================================
+function borrarCache(){
+    if(confirm('¿Borrar todos los datos locales? Se cerrará tu sesión y se perderán las preferencias. Esta acción no se puede deshacer.')){
+        localStorage.clear();
+        sessionStorage.clear();
+        if(auth) auth.signOut().finally(() => location.reload());
+        else location.reload();
+    }
 }
 
 // =====================================
@@ -547,11 +667,6 @@ function analizar(cap){
     return {titulo: tit, capitulo: partes.length > 1 ? partes.slice(1).join(' - ').trim() : null};
 }
 
-function idSeguro(t){
-    if(!t || typeof t !== 'string') return 'sin-' + Math.random().toString(36).substr(2,9);
-    return (t.replace(/\s+/g,'-').replace(/[^a-zA-Z0-9-]/g,'').toLowerCase()) || 'sin-' + Math.random().toString(36).substr(2,9);
-}
-
 function mezclarOpciones(p){
     const opciones = [
         {letra:'A', texto: p.opcion_a || ''},
@@ -571,7 +686,7 @@ function mezclarOpciones(p){
 }
 
 // =====================================
-// LISTADO
+// LISTADO (CON IDs ÚNICOS)
 // =====================================
 function mostrarListado(){
     document.getElementById('contenedor-articulos').classList.remove('hidden');
@@ -601,7 +716,7 @@ function mostrarListado(){
     });
 
     let html = '';
-    let contadorId = 0; // ✅ Contador global para IDs únicos
+    let contadorId = 0;
 
     ord.forEach(nt => {
         if(!nt || typeof nt !== 'string') return;
@@ -612,7 +727,7 @@ function mostrarListado(){
         const un = aN && aN.numero ? aN.numero : '?';
         const nc = NOMBRES[nt] || nt;
         const tieneCaps = Object.keys(g.caps).length > 0;
-        const id = 'tit-' + (contadorId++); // ✅ ID único
+        const id = 'tit-' + (contadorId++);
 
         html += '<div class="tit-enc" onclick="toggleT(this,\''+id+'\')"><div><div class="tit-num">'+nt.toUpperCase()+'</div><div class="tit-nom">'+nc+'</div></div><span class="fl">▶</span></div>';
         html += '<div class="tit-cont" id="'+id+'">';
@@ -624,8 +739,7 @@ function mostrarListado(){
                 if(!ac || ac.length === 0) return;
                 const p2 = ac[0] && ac[0].numero ? ac[0].numero : '?';
                 const u2 = ac[ac.length-1] && ac[ac.length-1].numero ? ac[ac.length-1].numero : '?';
-                const idc = 'cap-' + (contadorId++); // ✅ ID único
-
+                const idc = 'cap-' + (contadorId++);
                 html += '<div class="cap-enc" onclick="toggleC(event,this,\''+idc+'\')"><div><div class="cap-nom">'+nc2.toUpperCase()+'</div><div class="cap-ran">'+ac.length+' artículos · '+p2+'-'+u2+'</div></div><span class="flc">▶</span></div>';
                 html += '<div class="cap-cont" id="'+idc+'">';
                 html += ac.map(a => renderCard(a)).join('');
@@ -668,9 +782,6 @@ function toggleC(e,el,id){
     if(c) c.classList.toggle('abierto');
 }
 
-// =====================================
-// VER ARTÍCULO
-// =====================================
 function verArt(id){
     const a = arts.find(x => x.id === id);
     if(!a) return;
@@ -736,7 +847,8 @@ function responderTest(op){
         if(opBtn === op && op !== correcta) b.classList.add('incorrecta');
     });
 
-    if(op === correcta) testActual.puntaje++;
+    if(op === correcta){ testActual.puntaje++; vibrar(50); }
+    else { vibrar([50,50,50]); }
 
     const esCorrecta = op === correcta;
     const total = testActual.preguntas.length;
@@ -764,7 +876,6 @@ async function mostrarResultadoTest(){
     const cont = document.getElementById('contenedor-vista-articulo');
     cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestArticulo('+testActual.articulo+')">🔄 Reintentar</button><button class="btn" onclick="volverAlArticulo()" style="margin-top:8px">⬅ Volver al artículo</button></div>';
 
-    // ✅ Guardar progreso SOLO si NO es invitado
     if(usuarioActual && !esInvitado){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
@@ -842,7 +953,8 @@ function responderGlobal(op){
         if(opBtn === op && op !== correcta) b.classList.add('incorrecta');
     });
 
-    if(op === correcta) testGlobal.puntaje++;
+    if(op === correcta){ testGlobal.puntaje++; vibrar(50); }
+    else { vibrar([50,50,50]); }
 
     const esCorrecta = op === correcta;
     const total = testGlobal.preguntas.length;
@@ -870,7 +982,6 @@ async function mostrarResultadoGlobal(){
     const cont = document.getElementById('test-contenedor');
     cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Legal Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestAleatorio()">🔄 Reintentar</button></div>';
 
-    // ✅ Guardar progreso SOLO si NO es invitado
     if(usuarioActual && !esInvitado){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
@@ -945,15 +1056,41 @@ function buscar(t){
 document.getElementById('input-busqueda').addEventListener('input', e => buscar(e.target.value));
 
 // =====================================
-// INICIO
+// AJUSTES - EVENTOS
 // =====================================
-// ✅ Activar el toggle de tema
-const swTema = document.getElementById('switch-tema');
-if(swTema){
-    swTema.addEventListener('change', e => aplicarTema(e.target.checked));
+document.getElementById('switch-tema').addEventListener('change', e => {
+    aplicarTema(e.target.checked);
+    vibrar(30);
+});
+
+document.getElementById('switch-vibracion').addEventListener('change', e => {
+    localStorage.setItem('vibracion', e.target.checked ? '1' : '0');
+    if(e.target.checked) vibrar(50);
+});
+
+document.getElementById('switch-notificaciones').addEventListener('change', e => {
+    localStorage.setItem('notificaciones', e.target.checked ? '1' : '0');
+    if(e.target.checked && 'Notification' in window){
+        Notification.requestPermission();
+    }
+});
+
+function cargarAjustesExtras(){
+    const vib = localStorage.getItem('vibracion');
+    const swVib = document.getElementById('switch-vibracion');
+    if(swVib) swVib.checked = vib === null ? true : vib === '1';
+    
+    const notif = localStorage.getItem('notificaciones');
+    const swNotif = document.getElementById('switch-notificaciones');
+    if(swNotif) swNotif.checked = notif === '1';
 }
 
+// =====================================
+// INICIO
+// =====================================
 cargarTema();
+cargarTamano();
+cargarAjustesExtras();
 cargarArticulos();
 cargarPreguntas();
 </script>

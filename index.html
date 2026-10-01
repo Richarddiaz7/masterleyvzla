@@ -26,6 +26,8 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .busq-w{display:flex;align-items:center;background:var(--card);border:1px solid var(--bor);border-radius:12px;padding:10px 14px}
 .busq-w input{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:15px;font-family:inherit}
 .busq-w input::placeholder{color:var(--mut)}
+.btn-imprimir-todo{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:12px;background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;border:none;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-imprimir-todo:hover{background:linear-gradient(135deg,#a67c00,#d4af37);transform:translateY(-2px)}
 .cont{padding:16px;max-width:800px;margin:0 auto}
 .tit-enc{background:linear-gradient(135deg,#8b6914,#c9a227);color:#0a2540;padding:14px 18px;border-radius:12px;margin-top:20px;margin-bottom:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 16px rgba(201,162,39,.25);border:1px solid #d4af37}
 .tit-enc:first-child{margin-top:0}
@@ -60,6 +62,8 @@ body.claro .header{background:linear-gradient(135deg,#f8f6f0,#e8e4d8)}
 .btn-prim:hover{background:var(--acch)}
 .btn-google{background:#fff;color:#333;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;gap:10px}
 .btn-google:hover{background:#f5f5f5}
+.btn-print{background:var(--bg2);border:2px solid var(--acc);color:var(--acc);display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-print:hover{background:rgba(201,162,39,.15)}
 .tabs{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--bor);display:flex;justify-content:space-around;padding:8px 0 10px;z-index:100}
 .tab{flex:1;text-align:center;padding:6px 4px;cursor:pointer;color:var(--mut);font-size:10px;background:transparent;border:none;font-family:inherit}
 .tab.act{color:var(--acc)}
@@ -178,6 +182,39 @@ body.tamano-extra .tex{font-size:20px!important}
 body.tamano-extra .test-preg{font-size:20px!important}
 body.tamano-extra .test-op{font-size:17px!important}
 body.tamano-extra .test-explic{font-size:17px!important}
+
+/* ====================================== */
+/* CSS DE IMPRESIÓN (PDF)                 */
+/* ====================================== */
+@media print {
+    body { background: #fff !important; color: #000 !important; padding: 0 !important; font-family: 'Times New Roman', Georgia, serif; }
+    .header, .tabs, .busq, .portada, .modal, .btn, .btn-imprimir-todo, .art-test-btn, .test-op, .toggle-row, .btn-tamano, .stats-grid, .contacto-btn, .perfil-avatar, .perfil-box img, .acerca-card { display: none !important; }
+    .pant { display: none !important; }
+    .pant.act { display: block !important; }
+    .cont { padding: 0 !important; max-width: 100% !important; }
+    .vista { background: #fff !important; border: none !important; box-shadow: none !important; padding: 0 !important; }
+    .vista .cab { border-bottom: 2px solid #000 !important; }
+    .vista .num-g { background: #000 !important; color: #fff !important; }
+    .vista .tit-a { color: #000 !important; }
+    .vista .cap-a { color: #333 !important; }
+    .vista .tex { color: #000 !important; font-size: 12pt !important; line-height: 1.6 !important; text-align: justify !important; }
+    .tit-enc { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #000 !important; box-shadow: none !important; }
+    .tit-num, .tit-nom { color: #000 !important; }
+    .tit-cont { background: #fff !important; border: 1px solid #ccc !important; }
+    .cap-enc { background: #f5f5f5 !important; color: #000 !important; border-left: 4px solid #000 !important; }
+    .cap-nom, .cap-ran { color: #000 !important; }
+    .art-card { background: #fff !important; border: 1px solid #ccc !important; box-shadow: none !important; page-break-inside: avoid; }
+    .art-num { background: #000 !important; color: #fff !important; }
+    .art-tit { color: #000 !important; }
+    .art-prev { color: #333 !important; -webkit-line-clamp: unset !important; display: block !important; }
+    .print-header { display: block !important; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #000; }
+    .print-header h1 { font-size: 16pt; color: #000; margin-bottom: 4px; }
+    .print-header p { font-size: 10pt; color: #333; font-style: italic; }
+    .print-footer { display: block !important; text-align: center; margin-top: 30px; padding-top: 10px; border-top: 1px solid #999; font-size: 9pt; color: #666; }
+    .print-titulo-seccion { display: block !important; background: #f0f0f0; padding: 8px; margin: 15px 0 10px; border-left: 4px solid #000; font-weight: bold; font-size: 13pt; color: #000; }
+    @page { margin: 2cm; }
+}
+.print-header, .print-footer, .print-titulo-seccion { display: none; }
 </style>
 </head>
 <body class="tamano-normal">
@@ -214,6 +251,7 @@ body.tamano-extra .test-explic{font-size:17px!important}
 <span>🔍</span>
 <input type="text" id="input-busqueda" placeholder="Buscar por número, título o palabra..." autocomplete="off">
 </div>
+<button class="btn-imprimir-todo" onclick="imprimirConstitucion()">🖨️ Imprimir Constitución completa</button>
 </div>
 <div class="cont" id="contenedor-articulos"><div class="carg">Cargando Constitución...</div></div>
 <div class="cont hidden" id="contenedor-vista-articulo"></div>
@@ -249,11 +287,12 @@ body.tamano-extra .test-explic{font-size:17px!important}
 <h3>🗺️ Roadmap de la App</h3>
 <div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 1:</strong> Constitución completa (350 artículos + Preámbulo)</div></div>
 <div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 2:</strong> Test Legal interactivo</div></div>
-<div class="roadmap-item"><span class="estado">⏳</span><div class="texto"><strong>Fase 3:</strong> Módulo IA consultor legal (en desarrollo)</div></div>
-<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 4:</strong> Código Civil</div></div>
-<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 5:</strong> Código Penal</div></div>
-<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 6:</strong> LOTTT (Ley Orgánica del Trabajo)</div></div>
-<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 7:</strong> Publicación en Play Store y App Store</div></div>
+<div class="roadmap-item"><span class="estado">✅</span><div class="texto"><strong>Fase 3:</strong> Imprimir/Exportar a PDF</div></div>
+<div class="roadmap-item"><span class="estado">⏳</span><div class="texto"><strong>Fase 4:</strong> Módulo IA consultor legal (en desarrollo)</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 5:</strong> Código Civil</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 6:</strong> Código Penal</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 7:</strong> LOTTT (Ley Orgánica del Trabajo)</div></div>
+<div class="roadmap-item"><span class="estado">📅</span><div class="texto"><strong>Fase 8:</strong> Publicación en Play Store y App Store</div></div>
 </div>
 
 <div class="acerca-card">
@@ -401,7 +440,7 @@ const db = firebase.firestore();
 const auth = firebase.auth();
 
 // =====================================
-// PREÁMBULO (hardcodeado)
+// PREÁMBULO
 // =====================================
 const PREAMBULO = {
     titulo: "Preámbulo",
@@ -409,36 +448,9 @@ const PREAMBULO = {
 };
 
 const PREGUNTAS_PREAMBULO = [
-    {
-        articulo_id: 0,
-        enunciado: "Según el Preámbulo, el pueblo de Venezuela decreta la Constitución en ejercicio de:",
-        opcion_a: "La autoridad del Presidente",
-        opcion_b: "Sus poderes creadores",
-        opcion_c: "La decisión de la Asamblea Nacional",
-        opcion_d: "Un decreto militar",
-        respuesta_correcta: "B",
-        explicacion: "El Preámbulo establece que el pueblo de Venezuela decreta la Constitución en ejercicio de sus poderes creadores, invocando la protección de Dios y el ejemplo de Simón Bolívar."
-    },
-    {
-        articulo_id: 0,
-        enunciado: "El Preámbulo invoca la protección de Dios, el ejemplo histórico de Simón Bolívar y:",
-        opcion_a: "La sabiduría de los jueces",
-        opcion_b: "El heroísmo y sacrificio de nuestros antepasados aborígenes",
-        opcion_c: "La fuerza de la Fuerza Armada",
-        opcion_d: "La experiencia de los legisladores",
-        respuesta_correcta: "B",
-        explicacion: "El Preámbulo invoca la protección de Dios, el ejemplo histórico de nuestro Libertador Simón Bolívar y el heroísmo y sacrificio de nuestros antepasados aborígenes y de los precursores y forjadores de una patria libre y soberana."
-    },
-    {
-        articulo_id: 0,
-        enunciado: "Según el Preámbulo, uno de los fines supremos es refundar la República para establecer una sociedad:",
-        opcion_a: "Monárquica y centralizada",
-        opcion_b: "Democrática, participativa y protagónica",
-        opcion_c: "Militar y autoritaria",
-        opcion_d: "Exclusivamente federal",
-        respuesta_correcta: "B",
-        explicacion: "El Preámbulo establece el fin supremo de refundar la República para establecer una sociedad democrática, participativa y protagónica, multiétnica y pluricultural en un Estado de justicia, federal y descentralizado."
-    }
+    {articulo_id: 0, enunciado: "Según el Preámbulo, el pueblo de Venezuela decreta la Constitución en ejercicio de:", opcion_a: "La autoridad del Presidente", opcion_b: "Sus poderes creadores", opcion_c: "La decisión de la Asamblea Nacional", opcion_d: "Un decreto militar", respuesta_correcta: "B", explicacion: "El Preámbulo establece que el pueblo de Venezuela decreta la Constitución en ejercicio de sus poderes creadores, invocando la protección de Dios y el ejemplo de Simón Bolívar."},
+    {articulo_id: 0, enunciado: "El Preámbulo invoca la protección de Dios, el ejemplo histórico de Simón Bolívar y:", opcion_a: "La sabiduría de los jueces", opcion_b: "El heroísmo y sacrificio de nuestros antepasados aborígenes", opcion_c: "La fuerza de la Fuerza Armada", opcion_d: "La experiencia de los legisladores", respuesta_correcta: "B", explicacion: "El Preámbulo invoca la protección de Dios, el ejemplo histórico de nuestro Libertador Simón Bolívar y el heroísmo y sacrificio de nuestros antepasados aborígenes y de los precursores y forjadores de una patria libre y soberana."},
+    {articulo_id: 0, enunciado: "Según el Preámbulo, uno de los fines supremos es refundar la República para establecer una sociedad:", opcion_a: "Monárquica y centralizada", opcion_b: "Democrática, participativa y protagónica", opcion_c: "Militar y autoritaria", opcion_d: "Exclusivamente federal", respuesta_correcta: "B", explicacion: "El Preámbulo establece el fin supremo de refundar la República para establecer una sociedad democrática, participativa y protagónica, multiétnica y pluricultural en un Estado de justicia, federal y descentralizado."}
 ];
 
 // =====================================
@@ -464,9 +476,7 @@ const NOMBRES = {
 };
 const ORDEN = ["Título I","Título II","Título III","Título IV","Título V","Título VI","Título VII","Título VIII","Título IX"];
 
-function ocultarPortada(){
-    document.getElementById('pantalla-portada').classList.add('hidden');
-}
+function ocultarPortada(){ document.getElementById('pantalla-portada').classList.add('hidden'); }
 
 // =====================================
 // TEMA
@@ -491,9 +501,7 @@ function aplicarTamano(tamano){
     document.body.classList.remove('tamano-pequena', 'tamano-normal', 'tamano-grande', 'tamano-extra');
     document.body.classList.add('tamano-' + tamano);
     localStorage.setItem('tamano_letra', tamano);
-    document.querySelectorAll('.btn-tamano').forEach(b => {
-        b.classList.toggle('activo', b.dataset.tamano === tamano);
-    });
+    document.querySelectorAll('.btn-tamano').forEach(b => b.classList.toggle('activo', b.dataset.tamano === tamano));
 }
 function cambiarTamano(tamano){ aplicarTamano(tamano); vibrar(30); }
 function cargarTamano(){ aplicarTamano(localStorage.getItem('tamano_letra') || 'normal'); }
@@ -550,20 +558,7 @@ async function guardarOActualizarUsuario(user){
         const doc = await ref.get();
         const hoy = new Date().toISOString().split('T')[0];
         if(!doc.exists){
-            await ref.set({
-                nombre: user.displayName || 'Usuario',
-                email: user.email || '',
-                foto: user.photoURL || '',
-                rol: 'user',
-                tipo_cuenta: 'FREE',
-                articulos_leidos: [],
-                tests_por_articulo: {},
-                tests_completados: 0,
-                aciertos_totales: 0,
-                ultimo_acceso: hoy,
-                fecha_registro: hoy,
-                racha_dias: 1
-            });
+            await ref.set({nombre: user.displayName || 'Usuario', email: user.email || '', foto: user.photoURL || '', rol: 'user', tipo_cuenta: 'FREE', articulos_leidos: [], tests_por_articulo: {}, tests_completados: 0, aciertos_totales: 0, ultimo_acceso: hoy, fecha_registro: hoy, racha_dias: 1});
         } else {
             await ref.update({ ultimo_acceso: hoy });
         }
@@ -590,51 +585,26 @@ async function loginGoogle(){
         const provider = new firebase.auth.GoogleAuthProvider();
         await auth.signInWithPopup(provider);
         cerrarModalLogin();
-    }catch(e){
-        entrarAppAutorizado = false;
-        console.error('Error login Google:', e);
-        alert('Error: ' + e.message);
-    }
+    }catch(e){ entrarAppAutorizado = false; console.error('Error login Google:', e); alert('Error: ' + e.message); }
 }
 async function loginEmail(){
     const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
     if(!email || !pass){ alert('Ingresa email y contraseña'); return; }
-    try{
-        entrarAppAutorizado = true;
-        await auth.signInWithEmailAndPassword(email, pass);
-        cerrarModalLogin();
-    }catch(e){
-        entrarAppAutorizado = false;
-        console.error('Error login Email:', e);
-        alert('Error: ' + e.message);
-    }
+    try{ entrarAppAutorizado = true; await auth.signInWithEmailAndPassword(email, pass); cerrarModalLogin(); }
+    catch(e){ entrarAppAutorizado = false; console.error('Error login Email:', e); alert('Error: ' + e.message); }
 }
 async function registroEmail(){
     const email = document.getElementById('login-email').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
     if(!email || !pass){ alert('Ingresa email y contraseña'); return; }
     if(pass.length < 6){ alert('La contraseña debe tener al menos 6 caracteres'); return; }
-    try{
-        entrarAppAutorizado = true;
-        await auth.createUserWithEmailAndPassword(email, pass);
-        cerrarModalLogin();
-    }catch(e){
-        entrarAppAutorizado = false;
-        console.error('Error registro:', e);
-        alert('Error: ' + e.message);
-    }
+    try{ entrarAppAutorizado = true; await auth.createUserWithEmailAndPassword(email, pass); cerrarModalLogin(); }
+    catch(e){ entrarAppAutorizado = false; console.error('Error registro:', e); alert('Error: ' + e.message); }
 }
 async function loginInvitado(){
-    try{
-        entrarAppAutorizado = true;
-        await auth.signInAnonymously();
-        cerrarModalLogin();
-    }catch(e){
-        entrarAppAutorizado = false;
-        console.error('Error login invitado:', e);
-        alert('Error: ' + e.message);
-    }
+    try{ entrarAppAutorizado = true; await auth.signInAnonymously(); cerrarModalLogin(); }
+    catch(e){ entrarAppAutorizado = false; console.error('Error login invitado:', e); alert('Error: ' + e.message); }
 }
 async function cerrarSesion(){
     if(confirm('¿Cerrar sesión?')){
@@ -697,7 +667,7 @@ function mezclarOpciones(p){
 }
 
 // =====================================
-// LISTADO CON PREÁMBULO
+// LISTADO
 // =====================================
 function mostrarListado(){
     document.getElementById('contenedor-articulos').classList.remove('hidden');
@@ -706,7 +676,6 @@ function mostrarListado(){
     const cont = document.getElementById('contenedor-articulos');
     if(arts.length === 0){ cont.innerHTML = '<div class="carg">Cargando...</div>'; return; }
 
-    // ✅ Tarjeta del Preámbulo al inicio
     let htmlPreambulo = `
         <div class="art-card" onclick="verPreambulo()" style="border:2px solid var(--acc);background:linear-gradient(135deg,rgba(201,162,39,.15),rgba(201,162,39,.05))">
             <span class="art-num" style="background:var(--acc);color:var(--bg)">📜 PREÁMBULO</span>
@@ -818,6 +787,7 @@ function verPreambulo(){
                 <div class="cap-a">Constitución de la República Bolivariana de Venezuela</div>
             </div>
             <div class="tex">${PREAMBULO.texto}</div>
+            <button class="btn btn-print" onclick="imprimirPreambulo()">🖨️ Imprimir Preámbulo</button>
             <button class="art-test-btn" onclick="iniciarTestPreambulo()">📝 Hacer test del Preámbulo</button>
             <button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button>
         </div>
@@ -844,8 +814,174 @@ function verArt(id){
     const numArt = a.numero || '?';
     const tienePreg = preguntas.some(p => p.articulo_id === a.numero);
 
-    v.innerHTML = '<div class="vista"><div class="cab"><span class="num-g">Artículo '+numArt+'</span><div class="tit-a">'+(a.titulo||'')+'</div><div class="cap-a">'+(a.capitulo||'')+'</div></div><div class="tex">'+(a.texto_oficial||'')+'</div>'+(tienePreg ? '<button class="art-test-btn" onclick="iniciarTestArticulo('+numArt+')">📝 Hacer test de este artículo</button>' : '')+'<button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button></div>';
+    v.innerHTML = '<div class="vista"><div class="cab"><span class="num-g">Artículo '+numArt+'</span><div class="tit-a">'+(a.titulo||'')+'</div><div class="cap-a">'+(a.capitulo||'')+'</div></div><div class="tex">'+(a.texto_oficial||'')+'</div><button class="btn btn-print" onclick="imprimirArticulo('+numArt+')">🖨️ Imprimir este artículo</button>'+(tienePreg ? '<button class="art-test-btn" onclick="iniciarTestArticulo('+numArt+')">📝 Hacer test de este artículo</button>' : '')+'<button class="btn" onclick="mostrarListado()" style="margin-top:10px">⬅ Volver al índice</button></div>';
     window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// =====================================
+// IMPRIMIR
+// =====================================
+function generarHeaderImpresion(titulo){
+    return '<div class="print-header"><h1>CONSTITUCIÓN DE LA REPÚBLICA BOLIVARIANA DE VENEZUELA</h1><p>Máster Ley Vzla IA · www.masterleyvzla.onrender.com</p><hr style="margin-top:10px;border:none;border-top:2px solid #000"></div>';
+}
+function generarFooterImpresion(){
+    const hoy = new Date().toLocaleDateString('es-VE', {year:'numeric', month:'long', day:'numeric'});
+    return '<div class="print-footer">Documento generado por Máster Ley Vzla IA · ' + hoy + '<br>www.masterleyvzla.onrender.com</div>';
+}
+
+function imprimirArticulo(numArt){
+    const a = arts.find(x => x.numero === numArt);
+    if(!a){ alert('Artículo no encontrado'); return; }
+    
+    const printWindow = window.open('', '_blank');
+    const contenido = `
+        ${generarHeaderImpresion()}
+        <div style="text-align:justify;font-family:'Times New Roman',Georgia,serif;font-size:12pt;line-height:1.6;color:#000">
+            <h2 style="text-align:center;font-size:14pt;margin-bottom:6px">Artículo ${a.numero}</h2>
+            <p style="text-align:center;font-style:italic;margin-bottom:16px;font-size:11pt">${a.titulo||''}</p>
+            <p style="font-size:10pt;color:#666;margin-bottom:16px;text-align:center;font-style:italic">${a.capitulo||''}</p>
+            <hr style="margin-bottom:16px;border:none;border-top:1px solid #999">
+            <p style="text-align:justify">${(a.texto_oficial||'').replace(/\n/g, '<br>')}</p>
+        </div>
+        ${generarFooterImpresion()}
+    `;
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Artículo ${a.numero} - Constitución</title>
+            <style>
+                @page { margin: 2cm; }
+                body { font-family: 'Times New Roman', Georgia, serif; color: #000; padding: 20px; }
+                @media print { body { padding: 0; } }
+            </style>
+        </head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.focus(); printWindow.print(); }, 500);
+}
+
+function imprimirPreambulo(){
+    const printWindow = window.open('', '_blank');
+    const contenido = `
+        ${generarHeaderImpresion()}
+        <div style="text-align:justify;font-family:'Times New Roman',Georgia,serif;font-size:12pt;line-height:1.6;color:#000">
+            <h2 style="text-align:center;font-size:14pt;margin-bottom:16px">PREÁMBULO</h2>
+            <hr style="margin-bottom:16px;border:none;border-top:1px solid #999">
+            <p style="text-align:justify">${PREAMBULO.texto}</p>
+        </div>
+        ${generarFooterImpresion()}
+    `;
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Preámbulo - Constitución</title>
+        <style>@page { margin: 2cm; } body { font-family: 'Times New Roman', Georgia, serif; color: #000; padding: 20px; } @media print { body { padding: 0; } }</style>
+        </head><body>${contenido}</body></html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.focus(); printWindow.print(); }, 500);
+}
+
+function imprimirConstitucion(){
+    if(arts.length === 0){ alert('La Constitución aún no ha cargado'); return; }
+    if(!confirm('¿Imprimir/Exportar la Constitución completa? (350 artículos + Preámbulo)')) return;
+    
+    const printWindow = window.open('', '_blank');
+    
+    let contenidoHTML = `
+        ${generarHeaderImpresion()}
+        <div style="text-align:justify;font-family:'Times New Roman',Georgia,serif;font-size:12pt;line-height:1.6;color:#000">
+            <h2 style="text-align:center;font-size:14pt;margin-bottom:16px">PREÁMBULO</h2>
+            <hr style="margin-bottom:16px;border:none;border-top:1px solid #999">
+            <p style="text-align:justify">${PREAMBULO.texto}</p>
+    `;
+    
+    // Agrupar por título y capítulo
+    const grupos = {};
+    arts.forEach(a => {
+        const info = analizar(a.capitulo);
+        const k = info.titulo;
+        if(!grupos[k]) grupos[k] = {arts:[], caps:{}};
+        grupos[k].arts.push(a);
+        if(info.capitulo){
+            if(!grupos[k].caps[info.capitulo]) grupos[k].caps[info.capitulo] = [];
+            grupos[k].caps[info.capitulo].push(a);
+        }
+    });
+    
+    const ord = Object.keys(grupos).sort((a,b) => {
+        const ia = ORDEN.indexOf(a), ib = ORDEN.indexOf(b);
+        if(ia === -1 && ib === -1) return a.localeCompare(b);
+        if(ia === -1) return 1;
+        if(ib === -1) return -1;
+        return ia - ib;
+    });
+    
+    ord.forEach(nt => {
+        const g = grupos[nt];
+        if(!g || !g.arts || g.arts.length === 0) return;
+        const nc = NOMBRES[nt] || nt;
+        
+        contenidoHTML += `
+            <div class="print-titulo-seccion">
+                <div style="font-size:11pt;letter-spacing:1px">${nt.toUpperCase()}</div>
+                <div style="font-size:13pt">${nc}</div>
+            </div>
+        `;
+        
+        const tieneCaps = Object.keys(g.caps).length > 0;
+        if(tieneCaps){
+            Object.keys(g.caps).forEach(nc2 => {
+                const ac = g.caps[nc2];
+                if(!ac || ac.length === 0) return;
+                contenidoHTML += `<h3 style="font-size:12pt;margin:14px 0 8px;color:#000;border-bottom:1px solid #999;padding-bottom:4px">${nc2.toUpperCase()}</h3>`;
+                ac.forEach(a => {
+                    contenidoHTML += `
+                        <div style="margin-bottom:14px;page-break-inside:avoid">
+                            <p style="font-weight:bold;font-size:11pt;margin-bottom:4px">Artículo ${a.numero}</p>
+                            ${a.titulo ? '<p style="font-style:italic;font-size:10pt;color:#333;margin-bottom:6px">'+a.titulo+'</p>' : ''}
+                            <p style="text-align:justify;font-size:11pt;line-height:1.5">${(a.texto_oficial||'').replace(/\n/g, '<br>')}</p>
+                        </div>
+                    `;
+                });
+            });
+        } else {
+            g.arts.forEach(a => {
+                contenidoHTML += `
+                    <div style="margin-bottom:14px;page-break-inside:avoid">
+                        <p style="font-weight:bold;font-size:11pt;margin-bottom:4px">Artículo ${a.numero}</p>
+                        ${a.titulo ? '<p style="font-style:italic;font-size:10pt;color:#333;margin-bottom:6px">'+a.titulo+'</p>' : ''}
+                        <p style="text-align:justify;font-size:11pt;line-height:1.5">${(a.texto_oficial||'').replace(/\n/g, '<br>')}</p>
+                    </div>
+                `;
+            });
+        }
+    });
+    
+    contenidoHTML += '</div>' + generarFooterImpresion();
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Constitución de Venezuela - Máster Ley Vzla IA</title>
+            <style>
+                @page { margin: 2cm; }
+                body { font-family: 'Times New Roman', Georgia, serif; color: #000; padding: 20px; }
+                @media print { body { padding: 0; } }
+            </style>
+        </head>
+        <body>${contenidoHTML}</body>
+        </html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.focus(); printWindow.print(); }, 1000);
 }
 
 // =====================================
@@ -864,19 +1000,15 @@ function mostrarPreguntaTest(){
     const cont = document.getElementById('contenedor-vista-articulo');
     const p = testActual.preguntas[testActual.indice];
     if(!p){ mostrarResultadoTest(); return; }
-
     const mezcla = mezclarOpciones(p);
     testActual.opcionesMezcladas = mezcla;
-
     const total = testActual.preguntas.length;
     const prog = (testActual.indice / total) * 100;
-
     let opsHtml = '';
     mezcla.opciones.forEach((o, i) => {
         const letra = ['A','B','C','D'][i];
         opsHtml += '<button class="test-op" data-op="'+letra+'" onclick="responderTest(\''+letra+'\')"><span class="letra">'+letra+'</span><span>'+o.texto+'</span></button>';
     });
-
     cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testActual.indice+1)+' de '+total+'</span><span>✅ '+testActual.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops">'+opsHtml+'</div><div id="test-respuesta"></div></div>';
     testActual.respondida = false;
     window.scrollTo({top:0, behavior:'smooth'});
@@ -885,22 +1017,17 @@ function mostrarPreguntaTest(){
 function responderTest(op){
     if(testActual.respondida) return;
     testActual.respondida = true;
-
     const correcta = testActual.opcionesMezcladas.nuevaCorrecta;
     const textoCorrecto = testActual.opcionesMezcladas.textoCorrecto;
     const p = testActual.preguntas[testActual.indice];
     const botones = document.querySelectorAll('.test-op');
-
     botones.forEach(b => {
         b.disabled = true;
         const opBtn = b.getAttribute('data-op');
         if(opBtn === correcta) b.classList.add('correcta');
         if(opBtn === op && op !== correcta) b.classList.add('incorrecta');
     });
-
-    if(op === correcta){ testActual.puntaje++; vibrar(50); }
-    else { vibrar([50,50,50]); }
-
+    if(op === correcta){ testActual.puntaje++; vibrar(50); } else { vibrar([50,50,50]); }
     const esCorrecta = op === correcta;
     const total = testActual.preguntas.length;
     document.getElementById('test-respuesta').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+textoCorrecto+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaTest()">'+(testActual.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
@@ -908,11 +1035,8 @@ function responderTest(op){
 
 function siguientePreguntaTest(){
     testActual.indice++;
-    if(testActual.indice >= testActual.preguntas.length){
-        mostrarResultadoTest();
-    } else {
-        mostrarPreguntaTest();
-    }
+    if(testActual.indice >= testActual.preguntas.length) mostrarResultadoTest();
+    else mostrarPreguntaTest();
 }
 
 async function mostrarResultadoTest(){
@@ -923,10 +1047,8 @@ async function mostrarResultadoTest(){
     if(porcentaje >= 90){ emoji = '🏆'; mensaje = '¡Excelente! Eres un experto.'; }
     else if(porcentaje >= 70){ emoji = '🥈'; mensaje = '¡Muy bien! Buen conocimiento.'; }
     else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
-
     const cont = document.getElementById('contenedor-vista-articulo');
     cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="'+(testActual.articulo === 0 ? 'iniciarTestPreambulo()' : 'iniciarTestArticulo('+testActual.articulo+')')+'">🔄 Reintentar</button><button class="btn" onclick="'+(testActual.articulo === 0 ? 'verPreambulo()' : 'volverAlArticulo()')+'" style="margin-top:8px">⬅ Volver</button></div>';
-
     if(usuarioActual && !esInvitado){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
@@ -936,11 +1058,7 @@ async function mostrarResultadoTest(){
             const key = String(testActual.articulo);
             const prev = testsPorArt[key] || {correctas: 0, total: 0};
             testsPorArt[key] = {correctas: Math.max(prev.correctas, puntaje), total: total};
-            await ref.update({
-                tests_por_articulo: testsPorArt,
-                tests_completados: (data.tests_completados || 0) + 1,
-                aciertos_totales: (data.aciertos_totales || 0) + puntaje
-            });
+            await ref.update({tests_por_articulo: testsPorArt, tests_completados: (data.tests_completados || 0) + 1, aciertos_totales: (data.aciertos_totales || 0) + puntaje});
         }catch(e){ console.error('Error guardando progreso:', e); }
     }
     window.scrollTo({top:0, behavior:'smooth'});
@@ -971,19 +1089,15 @@ function mostrarPreguntaGlobal(){
     const cont = document.getElementById('test-contenedor');
     const p = testGlobal.preguntas[testGlobal.indice];
     if(!p){ mostrarResultadoGlobal(); return; }
-
     const mezcla = mezclarOpciones(p);
     testGlobal.opcionesMezcladas = mezcla;
-
     const total = testGlobal.preguntas.length;
     const prog = (testGlobal.indice / total) * 100;
-
     let opsHtml = '';
     mezcla.opciones.forEach((o, i) => {
         const letra = ['A','B','C','D'][i];
         opsHtml += '<button class="test-op" data-op="'+letra+'" onclick="responderGlobal(\''+letra+'\')"><span class="letra">'+letra+'</span><span>'+o.texto+'</span></button>';
     });
-
     cont.innerHTML = '<div class="test-box"><div class="test-prog"><span>Pregunta '+(testGlobal.indice+1)+' de '+total+'</span><span>✅ '+testGlobal.puntaje+' aciertos</span></div><div class="test-barra"><div class="test-barra-f" style="width:'+prog+'%"></div></div><div class="test-preg">'+(p.enunciado||'')+'</div><div class="test-ops">'+opsHtml+'</div><div id="test-respuesta-global"></div></div>';
     testGlobal.respondida = false;
     window.scrollTo({top:0, behavior:'smooth'});
@@ -992,22 +1106,17 @@ function mostrarPreguntaGlobal(){
 function responderGlobal(op){
     if(testGlobal.respondida) return;
     testGlobal.respondida = true;
-
     const correcta = testGlobal.opcionesMezcladas.nuevaCorrecta;
     const textoCorrecto = testGlobal.opcionesMezcladas.textoCorrecto;
     const p = testGlobal.preguntas[testGlobal.indice];
     const botones = document.querySelectorAll('.test-op');
-
     botones.forEach(b => {
         b.disabled = true;
         const opBtn = b.getAttribute('data-op');
         if(opBtn === correcta) b.classList.add('correcta');
         if(opBtn === op && op !== correcta) b.classList.add('incorrecta');
     });
-
-    if(op === correcta){ testGlobal.puntaje++; vibrar(50); }
-    else { vibrar([50,50,50]); }
-
+    if(op === correcta){ testGlobal.puntaje++; vibrar(50); } else { vibrar([50,50,50]); }
     const esCorrecta = op === correcta;
     const total = testGlobal.preguntas.length;
     document.getElementById('test-respuesta-global').innerHTML = '<div class="test-explic"><strong style="color:'+(esCorrecta?'var(--verde)':'var(--rojo)')+'">'+(esCorrecta?'✅ ¡Correcto!':'❌ Incorrecto')+'</strong><br><strong>Respuesta correcta:</strong> '+textoCorrecto+'<br><br>'+(p.explicacion||'')+'</div><button class="btn btn-prim" onclick="siguientePreguntaGlobal()">'+(testGlobal.indice+1 < total ? 'Siguiente pregunta ➡' : 'Ver resultados 🏁')+'</button>';
@@ -1015,11 +1124,8 @@ function responderGlobal(op){
 
 function siguientePreguntaGlobal(){
     testGlobal.indice++;
-    if(testGlobal.indice >= testGlobal.preguntas.length){
-        mostrarResultadoGlobal();
-    } else {
-        mostrarPreguntaGlobal();
-    }
+    if(testGlobal.indice >= testGlobal.preguntas.length) mostrarResultadoGlobal();
+    else mostrarPreguntaGlobal();
 }
 
 async function mostrarResultadoGlobal(){
@@ -1030,19 +1136,14 @@ async function mostrarResultadoGlobal(){
     if(porcentaje >= 90){ emoji = '🏆'; mensaje = '¡Excelente! Eres un experto.'; }
     else if(porcentaje >= 70){ emoji = '🥈'; mensaje = '¡Muy bien! Buen conocimiento.'; }
     else if(porcentaje >= 50){ emoji = '🥉'; mensaje = '¡Aprobado! Puedes mejorar.'; }
-
     const cont = document.getElementById('test-contenedor');
     cont.innerHTML = '<div class="test-box test-resultado"><div class="ic">'+emoji+'</div><h2>Test Legal Completado</h2><div class="puntaje">'+puntaje+'/'+total+'</div><p>'+mensaje+'<br>'+porcentaje+'% de aciertos</p><button class="btn btn-prim" onclick="iniciarTestAleatorio()">🔄 Reintentar</button></div>';
-
     if(usuarioActual && !esInvitado){
         try{
             const ref = db.collection('usuarios').doc(usuarioActual.uid);
             const doc = await ref.get();
             const data = doc.data() || {};
-            await ref.update({
-                tests_completados: (data.tests_completados || 0) + 1,
-                aciertos_totales: (data.aciertos_totales || 0) + puntaje
-            });
+            await ref.update({tests_completados: (data.tests_completados || 0) + 1, aciertos_totales: (data.aciertos_totales || 0) + puntaje});
         }catch(e){ console.error('Error guardando progreso:', e); }
     }
     window.scrollTo({top:0, behavior:'smooth'});
